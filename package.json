@@ -21,6 +21,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "live-server": "^1.2.1",
+    "puppeteer": "^5.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
