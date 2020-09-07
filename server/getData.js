@@ -39,7 +39,7 @@ async function getScores(link) {
   editFile(`${link}.json`);
 }
 
-getScores('westseries1');
+// getScores('westseries1');
 
 function editFile(file) {
   const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
