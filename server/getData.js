@@ -35,6 +35,34 @@ async function getScores(link) {
   fs.writeFileSync(`${path}/${link}.json`, JSON.stringify(data, null, 2));
 
   browser.close();
+
+  editFile(`${link}.json`);
 }
 
 getScores('westseries1');
+
+function editFile(file) {
+  const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
+  const newArr = [...readData];
+  for (let i = 0; i < newArr.length; i++) {
+    newArr[i].game = `game${newArr[i].game.split('')[1]}`;
+    newArr[i].score.includes('at')
+      ? (newArr[i].completed = false)
+      : (newArr[i].completed = true);
+  }
+
+  for (let i = 0; i < newArr.length; i++) {
+    if (newArr[i].completed) {
+      let oldScore = newArr[i].score;
+      let newScore = {};
+      newScore.awayTeam = oldScore.split('-')[0].split(' ')[0];
+      newScore.awayScore = parseInt(oldScore.split('-')[0].split(' ')[1]);
+      newScore.homeTeam = oldScore.split('-')[1].split(' ')[2];
+      newScore.homeScore = parseInt(oldScore.split('-')[1].split(' ')[1]);
+      newArr[i].score = newScore;
+      delete newArr[i].channel;
+      delete newArr[i].date;
+    }
+  }
+  fs.writeFileSync(`${path}/${file}`, JSON.stringify(newArr, null, 2));
+}
