@@ -45,6 +45,7 @@ function createPlayoffMatchup(conf, round) {
       highTeam = nextUp;
     }
     series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
+    series.conf = conf;
 
     series.highSeed = highTeam;
     series.highSeed.wins = 0;
@@ -61,5 +62,6 @@ function createPlayoffMatchup(conf, round) {
   writeFile(`${path}/${conf}round${round}.json`, matchups);
 }
 
-// createPlayoffMatchup('west', 1);
-// createPlayoffMatchup('east', 1);
+module.exports = {
+  createPlayoffMatchup,
+};
