@@ -46,6 +46,7 @@ function createPlayoffMatchup(conf, round) {
     }
     series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
     series.conf = conf;
+    series.link = `${conf}series${highTeam.seed}`;
 
     series.highSeed = highTeam;
     series.highSeed.wins = 0;
