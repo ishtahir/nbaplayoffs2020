@@ -1,18 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
+import Header from './Header.jsx';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {};
-  }
-
-  render() {
-    return (
-      <>
-        <h1>Hello World!</h1>
-      </>
-    );
-  }
-}
+const App = () => {
+  return <Header />;
+};
 
 export default App;
