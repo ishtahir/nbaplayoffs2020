@@ -39,11 +39,10 @@ async function getScores(link) {
   editFile(`${link}.json`);
 }
 
-getScores('westseries1');
-
 function editFile(file) {
   const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
   const newArr = [...readData];
+
   for (let i = 0; i < newArr.length; i++) {
     newArr[i].game = `game${newArr[i].game.split('')[1]}`;
     newArr[i].score.includes('at')
@@ -76,6 +75,7 @@ function updateMainFile(oldFile, playoffsFile) {
   const oldFileData = JSON.parse(fs.readFileSync(oldFile, 'utf8'));
   const playoffsData = JSON.parse(fs.readFileSync(playoffsFile, 'utf8'));
 
+  let seriesLink;
   for (let i = 0; i < oldFileData.length; i++) {
     const homeTeam = oldFileData[i].score.homeTeam;
     const series = playoffsData.find(
@@ -92,7 +92,57 @@ function updateMainFile(oldFile, playoffsFile) {
       series[oldFileData[i].game].awayScore = oldFileData[i].score.awayScore;
       series[oldFileData[i].game].completed = oldFileData[i].completed;
     }
+    seriesLink = series.link;
   }
 
   fs.writeFileSync(playoffsFile, JSON.stringify(playoffsData, null, 2));
+
+  calculateWins(seriesLink, playoffsFile);
 }
+
+function calculateWins(series, playoffsFile) {
+  const playoffs = JSON.parse(fs.readFileSync(playoffsFile, 'utf8'));
+  const matchup = playoffs.find((match) => match.link === series);
+
+  matchup.highSeed.wins = 0;
+  matchup.lowSeed.wins = 0;
+  for (let i = 1; i < 8; i++) {
+    const current = matchup[`game${i}`];
+    if (current.hasOwnProperty('completed') && current.completed) {
+      const { homeScore, awayScore } = current;
+      if (i === 1 || i === 2 || i === 5 || i === 7) {
+        homeScore > awayScore
+          ? matchup.highSeed.wins++
+          : matchup.lowSeed.wins++;
+      } else {
+        homeScore > awayScore
+          ? matchup.lowSeed.wins++
+          : matchup.highSeed.wins++;
+      }
+    }
+  }
+
+  fs.writeFileSync(playoffsFile, JSON.stringify(playoffs, null, 2));
+}
+
+async function getAllScores(conf, round) {
+  let start, end;
+  if (round === 1) {
+    start = 1;
+    end = 4;
+  } else if (round === 2) {
+    start = 5;
+    end = 6;
+  } else {
+    start = 7;
+    end = 7;
+  }
+  const link = `${conf}series`;
+  for (let i = start; i <= end; i++) {
+    await getScores(`${link}${i}`);
+  }
+}
+
+module.exports = {
+  getAllScores,
+};
