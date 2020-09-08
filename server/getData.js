@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const { updateSettings, start } = require('./settings.js');
 
 const path = 'server/files';
 
@@ -8,7 +9,7 @@ async function getScores(link) {
 
   const page = await browser.newPage();
 
-  await page.setDefaultNavigationTimeout(0);
+  page.setDefaultNavigationTimeout(0);
 
   await page.goto(`https://www.nba.com/playoffs/2020/${link}`);
 
@@ -36,10 +37,13 @@ async function getScores(link) {
 
   browser.close();
 
-  editFile(`${link}.json`);
+  const round =
+    +link.split('series')[1] < 5 ? 1 : +link.split('series')[1] < 7 ? 2 : 3;
+
+  editFile(`${link}.json`, round);
 }
 
-function editFile(file) {
+function editFile(file, round) {
   const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
   const newArr = [...readData];
 
@@ -65,10 +69,8 @@ function editFile(file) {
   }
   fs.writeFileSync(`${path}/${file}`, JSON.stringify(newArr, null, 2));
 
-  updateMainFile(
-    `${path}/${file}`,
-    `${path}/${file.split('series').join('round')}`
-  );
+  if (file.split('series'))
+    updateMainFile(`${path}/${file}`, `${path}/playoffs-round${round}.json`);
 }
 
 function updateMainFile(oldFile, playoffsFile) {
@@ -106,6 +108,7 @@ function calculateWins(series, playoffsFile) {
 
   matchup.highSeed.wins = 0;
   matchup.lowSeed.wins = 0;
+
   for (let i = 1; i < 8; i++) {
     const current = matchup[`game${i}`];
     if (current.hasOwnProperty('completed') && current.completed) {
@@ -120,6 +123,20 @@ function calculateWins(series, playoffsFile) {
           : matchup.highSeed.wins++;
       }
     }
+  }
+
+  if (matchup.highSeed.wins === 4) {
+    matchup.lowSeed.eliminated = true;
+    updateSettings('team', {
+      conf: matchup.conf,
+      short: matchup.lowSeed.short,
+    });
+  } else if (matchup.lowSeed.wins === 4) {
+    matchup.highSeed.eliminated = true;
+    updateSettings('team', {
+      conf: matchup.conf,
+      short: matchup.highSeed.short,
+    });
   }
 
   fs.writeFileSync(playoffsFile, JSON.stringify(playoffs, null, 2));
@@ -140,6 +157,18 @@ async function getAllScores(conf, round) {
   const link = `${conf}series`;
   for (let i = start; i <= end; i++) {
     await getScores(`${link}${i}`);
+  }
+  cleanup();
+}
+
+function cleanup() {
+  for (let i = 1; i < 8; i++) {
+    try {
+      fs.unlinkSync(`${path}/westseries${i}.json`);
+      fs.unlinkSync(`${path}/eastseries${i}.json`);
+    } catch (err) {
+      console.log("file doesn't exist");
+    }
   }
 }
 
