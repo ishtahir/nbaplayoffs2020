@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const path = 'server/files';
 
-const [westTeams, eastTeams, seedingOrder] = JSON.parse(
+const [westTeams, eastTeams, seedingOrder, checkStart] = JSON.parse(
   fs.readFileSync(`${path}/settings.json`, 'utf8')
 );
 
@@ -63,6 +63,51 @@ function createPlayoffMatchup(conf, round) {
   writeFile(`${path}/${conf}round${round}.json`, matchups);
 }
 
+function createMainFileForRound(round) {
+  const allMatchups = [];
+  const westSeries = JSON.parse(
+    fs.readFileSync(`${path}/westround${round}.json`)
+  );
+  const eastSeries = JSON.parse(
+    fs.readFileSync(`${path}/eastround${round}.json`)
+  );
+  for (let series of westSeries) {
+    allMatchups.push(series);
+  }
+  for (let series of eastSeries) {
+    allMatchups.push(series);
+  }
+  writeFile(`${path}/playoffs-round${round}.json`, allMatchups);
+}
+
+function updateSettings(setting, options) {
+  const data = [];
+  if (setting === 'team') {
+    const teams = options.conf === 'west' ? westTeams : eastTeams;
+    const team = teams.find((team) => team.short === options.short);
+    team.eliminated = true;
+  } else if (setting === 'start') {
+    checkStart.startFunction = true;
+  }
+  data.push(westTeams, eastTeams, seedingOrder, checkStart);
+
+  writeFile(`${path}/settings.json`, data);
+}
+
+function start(round) {
+  createPlayoffMatchup('west', round);
+  createPlayoffMatchup('east', round);
+  createMainFileForRound(round);
+  updateSettings('start');
+  fs.unlinkSync(`${path}/eastround1.json`);
+  fs.unlinkSync(`${path}/westround1.json`);
+}
+
+if (!checkStart.startFunction) {
+  start(1);
+}
+
 module.exports = {
-  createPlayoffMatchup,
+  start,
+  updateSettings,
 };
