@@ -1,3 +1,4 @@
 node_modules
 server/files
+dist/bundle.js
 .DS_Store
