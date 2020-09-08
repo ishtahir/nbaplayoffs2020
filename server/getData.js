@@ -39,7 +39,7 @@ async function getScores(link) {
   editFile(`${link}.json`);
 }
 
-// getScores('westseries1');
+getScores('westseries1');
 
 function editFile(file) {
   const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
@@ -65,4 +65,34 @@ function editFile(file) {
     }
   }
   fs.writeFileSync(`${path}/${file}`, JSON.stringify(newArr, null, 2));
+
+  updateMainFile(
+    `${path}/${file}`,
+    `${path}/${file.split('series').join('round')}`
+  );
+}
+
+function updateMainFile(oldFile, playoffsFile) {
+  const oldFileData = JSON.parse(fs.readFileSync(oldFile, 'utf8'));
+  const playoffsData = JSON.parse(fs.readFileSync(playoffsFile, 'utf8'));
+
+  for (let i = 0; i < oldFileData.length; i++) {
+    const homeTeam = oldFileData[i].score.homeTeam;
+    const series = playoffsData.find(
+      (series) =>
+        series.highSeed.short === homeTeam || series.lowSeed.short === homeTeam
+    );
+    if (
+      oldFileData[i].completed &&
+      series.hasOwnProperty(oldFileData[i].game)
+    ) {
+      series[oldFileData[i].game].homeTeam = oldFileData[i].score.homeTeam;
+      series[oldFileData[i].game].homeScore = oldFileData[i].score.homeScore;
+      series[oldFileData[i].game].awayTeam = oldFileData[i].score.awayTeam;
+      series[oldFileData[i].game].awayScore = oldFileData[i].score.awayScore;
+      series[oldFileData[i].game].completed = oldFileData[i].completed;
+    }
+  }
+
+  fs.writeFileSync(playoffsFile, JSON.stringify(playoffsData, null, 2));
 }
