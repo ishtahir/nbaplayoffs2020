@@ -16,14 +16,14 @@ const Matchup = ({
     <ul className={conference}>
       <Team
         seed={highSeed}
-        img={highImg}
+        img={highImg ? highImg : ''}
         mascot={highMascot}
         wins={highWins}
         high={true}
       />
       <Team
         seed={lowSeed}
-        img={lowImg}
+        img={lowImg ? lowImg : ''}
         mascot={lowMascot}
         wins={lowWins}
         high={false}
