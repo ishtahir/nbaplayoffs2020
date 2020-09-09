@@ -26,18 +26,21 @@ body {
 
 .text-nba {
   background: -webkit-linear-gradient(#ff7e7e, #ff5100);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-playoffs {
   background: -webkit-linear-gradient(#5a5afa, #038eff);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-2020 {
   background: -webkit-linear-gradient(#d6d6d6, #f5f5f5);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
