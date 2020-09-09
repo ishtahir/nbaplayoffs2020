@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const { updateSettings, start } = require('./settings.js');
+const { updateSettings } = require('./settings.js');
 
 const path = 'server/files';
 
