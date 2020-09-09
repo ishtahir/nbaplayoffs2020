@@ -1,37 +1,23 @@
 import React from 'react';
 import Matchup from './Matchup.jsx';
 
-const Round2 = () => {
+const Round2 = ({ matchups }) => {
   return (
     <div className='col rd2'>
-      <Matchup
-        conference='west'
-        highSeed={1}
-        lowSeed={4}
-        highSeedWins={0}
-        lowSeedWins={0}
-      />
-      <Matchup
-        conference='west'
-        highSeed={2}
-        lowSeed={3}
-        highSeedWins={0}
-        lowSeedWins={0}
-      />
-      <Matchup
-        conference='east'
-        highSeed={1}
-        lowSeed={4}
-        highSeedWins={0}
-        lowSeedWins={0}
-      />
-      <Matchup
-        conference='east'
-        highSeed={2}
-        lowSeed={3}
-        highSeedWins={0}
-        lowSeedWins={0}
-      />
+      {/* {matchups.map(({ conf, seriesName, highSeed, lowSeed }) => (
+        <Matchup
+          key={seriesName}
+          conference={conf}
+          highSeed={highSeed.seed}
+          lowSeed={lowSeed.seed}
+          highWins={highSeed.wins}
+          lowWins={lowSeed.wins}
+          highImg={`${highSeed.short}.svg`}
+          lowImg={`${lowSeed.short}.svg`}
+          highMascot={highSeed.mascot}
+          lowMascot={lowSeed.mascot}
+        />
+      ))} */}
     </div>
   );
 };
