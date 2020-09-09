@@ -31,8 +31,10 @@ function createPlayoffMatchup(conf, round) {
     if (teams[i].eliminated) {
       continue;
     }
-    const nextUp = teams.filter((team) =>
-      seedingOrder[teams[i].seed][seeding].includes(team.seed)
+    const nextUp = teams.filter(
+      (team) =>
+        team.eliminated === false &&
+        seedingOrder[teams[i].seed][seeding].includes(team.seed)
     )[0];
 
     let highTeam;
@@ -99,8 +101,8 @@ function start(round) {
   createPlayoffMatchup('east', round);
   createMainFileForRound(round);
   updateSettings('start');
-  fs.unlinkSync(`${path}/eastround1.json`);
-  fs.unlinkSync(`${path}/westround1.json`);
+  fs.unlinkSync(`${path}/eastround${round}.json`);
+  fs.unlinkSync(`${path}/westround${round}.json`);
 }
 
 if (!checkStart.startFunction) {
