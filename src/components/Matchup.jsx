@@ -1,11 +1,33 @@
 import React from 'react';
 import Team from './Team.jsx';
 
-const Matchup = ({ conference, seed, wins, img, mascot }) => (
+const Matchup = ({
+  conference,
+  highSeed,
+  lowSeed,
+  highWins,
+  lowWins,
+  highImg,
+  lowImg,
+  highMascot,
+  lowMascot,
+}) => (
   <div className='matchup'>
     <ul className={conference}>
-      <Team seed={seed} img={img} mascot={mascot} wins={wins} high={true} />
-      <Team seed={seed} img={img} mascot={mascot} wins={wins} high={false} />
+      <Team
+        seed={highSeed}
+        img={highImg}
+        mascot={highMascot}
+        wins={highWins}
+        high={true}
+      />
+      <Team
+        seed={lowSeed}
+        img={lowImg}
+        mascot={lowMascot}
+        wins={lowWins}
+        high={false}
+      />
     </ul>
   </div>
 );
