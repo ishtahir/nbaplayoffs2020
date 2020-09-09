@@ -11,6 +11,10 @@ const Bracket = () => {
           lowSeed={8}
           highSeedWins={0}
           lowSeedWins={0}
+          highSeedImg='LAL.svg'
+          lowSeedImg='POR.svg'
+          highSeedMascot='Lakers'
+          lowSeedMascot='Trailblazers'
         />
         <Matchup
           conference='west'
