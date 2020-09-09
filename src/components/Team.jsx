@@ -10,7 +10,7 @@ const Team = ({ seed, img, mascot, wins, high }) => {
         <img
           src={`images/${img}`}
           className={`${mascot}-img`}
-          alt={`${mascot} Logo`}
+          alt={mascot ? `${mascot} Logo` : ''}
         />
       </span>
       <span className='wins'>{wins}</span>
