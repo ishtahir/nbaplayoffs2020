@@ -1,8 +1,13 @@
 const express = require('express');
 const fs = require('fs');
+const cors = require('cors');
 const { getAllScores } = require('./getData.js');
 
 const app = express();
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static('dist'));
 
 app.get('/load', (req, res) => {
   const playoffs = JSON.parse(
