@@ -26,11 +26,13 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
         <tr>
           <th className='info-team'>
             <span className='info-seed seed-left'>{series.highSeed.seed}</span>
+            <span className='info-team-name'>{`${series.highSeed.city} ${series.highSeed.mascot}`}</span>
             <img src={`images/${series.highSeed.short}.svg`} />
           </th>
           <th className='info-vs'>vs</th>
           <th className='info-team'>
             <span className='info-seed seed-right'>{series.lowSeed.seed}</span>
+            <span className='info-team-name'>{`${series.lowSeed.city} ${series.lowSeed.mascot}`}</span>
             <img src={`images/${series.lowSeed.short}.svg`} />
           </th>
         </tr>
