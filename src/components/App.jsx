@@ -11,7 +11,13 @@ const App = () => {
       {seriesClicked === '' ? (
         <Bracket setSeriesClicked={setSeriesClicked} />
       ) : (
-        <p>Series Table coming soon...</p>
+        <p>
+          Series Table for series {seriesClicked.toUpperCase()} coming soon...
+          <br />
+          <button className='back-btn' onClick={() => setSeriesClicked('')}>
+            Go Back
+          </button>
+        </p>
       )}
     </>
   );
