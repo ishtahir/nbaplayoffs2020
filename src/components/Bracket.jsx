@@ -3,64 +3,21 @@ import Round from './Round.jsx';
 import axios from 'axios';
 
 const Bracket = () => {
-  const [round1Matches, setRound1Matches] = useState([]);
-  const [round2Matches, setRound2Matches] = useState([]);
-  const [round3Matches, setRound3Matches] = useState([
-    {
-      conf: '',
-      highSeed: { city: '', mascot: '', short: '' },
-      lowSeed: { city: '', mascot: '', short: '' },
-      seriesName: '',
-    },
-    {
-      conf: '',
-      highSeed: { city: '', mascot: '', short: '' },
-      lowSeed: { city: '', mascot: '', short: '' },
-      seriesName: '',
-    },
-  ]);
-  const [round4Matches, setRound4Matches] = useState([
-    {
-      conf: '',
-      highSeed: { city: '', mascot: '', short: '' },
-      lowSeed: { city: '', mascot: '', short: '' },
-      seriesName: '',
-    },
-  ]);
+  const [allMatches, setAllMatches] = useState([]);
 
   useEffect(() => {
     axios
-      .get('http://localhost:4501/scores/east/2')
-      .then((data) => console.log(data.data));
-    axios
-      .get('http://localhost:4501/load/rd/1')
+      .get('http://localhost:4501/series/')
       .then((data) => {
         const seeding = {};
         const order = [1, 4, 2, 3];
         for (let i = 0; i < order.length; i++) {
           seeding[order[i]] = i;
         }
-        setRound1Matches(
-          data.data.sort((a, b) => {
-            if (a.conf === b.conf) {
-              return seeding[a.highSeed.seed] - seeding[b.highSeed.seed];
-            }
-          })
-        );
-      })
-      .catch((err) => console.log);
 
-    axios
-      .get('http://localhost:4501/load/rd/2')
-      .then((data) => {
-        const seeding = {};
-        const order = [1, 4, 2, 3];
-        for (let i = 0; i < order.length; i++) {
-          seeding[order[i]] = i;
-        }
-        setRound2Matches(
+        setAllMatches(
           data.data.sort((a, b) => {
-            if (a.conf === b.conf) {
+            if (a.highSeed.conf === b.highSeed.conf && a.round === b.round) {
               return seeding[a.highSeed.seed] - seeding[b.highSeed.seed];
             }
           })
@@ -71,10 +28,78 @@ const Bracket = () => {
 
   return (
     <div className='bracket'>
-      <Round round={1} matchups={round1Matches} />
-      <Round round={2} matchups={round2Matches} />
-      <Round round={3} matchups={round3Matches} />
-      <Round round={4} matchups={round4Matches} />
+      <Round
+        round={1}
+        matchups={allMatches.filter((match) => match.round === 1)}
+      />
+      <Round
+        round={2}
+        matchups={allMatches.filter((match) => match.round === 2)}
+      />
+      <Round
+        round={3}
+        matchups={[
+          {
+            highSeed: {
+              city: '',
+              mascot: '',
+              short: '',
+              seed: '',
+              wins: '',
+              conf: 'west',
+            },
+            lowSeed: {
+              city: '',
+              mascot: '',
+              short: '',
+              seed: '',
+              wins: '',
+            },
+            seriesName: '',
+          },
+          {
+            highSeed: {
+              city: '',
+              mascot: '',
+              short: '',
+              seed: '',
+              wins: '',
+              conf: 'east',
+            },
+            lowSeed: {
+              city: 'Miami',
+              mascot: 'Heat',
+              short: 'MIA',
+              seed: 5,
+              wins: 0,
+            },
+            seriesName: '',
+          },
+        ]}
+      />
+      <Round
+        round={4}
+        matchups={[
+          {
+            highSeed: {
+              city: '',
+              mascot: '',
+              short: '',
+              seed: '',
+              wins: '',
+              conf: 'finals',
+            },
+            lowSeed: {
+              city: '',
+              mascot: '',
+              short: '',
+              seed: '',
+              wins: '',
+            },
+            seriesName: '',
+          },
+        ]}
+      />
     </div>
   );
 };
