@@ -37,9 +37,6 @@ async function getScores(link) {
 
   browser.close();
 
-  // const round =
-  //   +link.split('series')[1] < 5 ? 1 : +link.split('series')[1] < 7 ? 2 : 3;
-
   editFile(`${link}.json`);
 }
 
