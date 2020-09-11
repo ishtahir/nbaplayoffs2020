@@ -7,7 +7,7 @@ const Round = ({ matchups, round }) => {
       {matchups.map(({ conf, seriesName, highSeed, lowSeed }, i) => (
         <Matchup
           key={`${seriesName}${i}`}
-          conference={conf}
+          conference={highSeed.conf}
           highSeed={highSeed.seed}
           lowSeed={lowSeed.seed}
           highWins={highSeed.wins}
