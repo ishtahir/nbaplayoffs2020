@@ -223,6 +223,13 @@ th {
   border: none;
 }
 
+.info-team-name {
+  display: block;
+  text-transform: uppercase;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 24px;
+}
+
 .info-vs {
   text-transform: uppercase;
 }
