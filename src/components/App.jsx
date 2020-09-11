@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import Header from './Header.jsx';
 import Bracket from './Bracket.jsx';
+import SeriesInfo from './SeriesInfo.jsx';
 
 const App = () => {
   const [seriesClicked, setSeriesClicked] = useState('');
+  const [series, setSeries] = useState({});
 
   return (
     <>
       <Header />
       {seriesClicked === '' ? (
-        <Bracket setSeriesClicked={setSeriesClicked} />
+        <Bracket setSeriesClicked={setSeriesClicked} setSeries={setSeries} />
       ) : (
-        <p>
-          Series Table for series {seriesClicked.toUpperCase()} coming soon...
-          <br />
-          <button className='back-btn' onClick={() => setSeriesClicked('')}>
-            Go Back
-          </button>
-        </p>
+        <SeriesInfo series={series} setSeriesClicked={setSeriesClicked} />
       )}
     </>
   );
