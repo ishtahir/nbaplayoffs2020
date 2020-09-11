@@ -13,9 +13,17 @@ const Matchup = ({
   lowMascot,
   seriesName,
   setSeriesClicked,
+  setSeries,
+  series,
 }) => (
   <div className='matchup'>
-    <ul className={conference} onClick={() => setSeriesClicked(seriesName)}>
+    <ul
+      className={conference}
+      onClick={() => {
+        setSeriesClicked(seriesName);
+        setSeries(series);
+      }}
+    >
       <Team
         seed={highSeed}
         img={highImg ? highImg : ''}
