@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Alata&family=Oswald:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Grandstander&display=swap');
 
 html {
   font-size: 62.5%;
@@ -190,4 +191,71 @@ p {
 
 .back-btn:active {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+table {
+  position: relative;
+}
+
+table,
+td,
+th {
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
+}
+
+table {
+  width: 50%;
+  margin: 100px auto;
+  text-align: center;
+  font-family: 'Grandstander', cursive;
+  border: 2px solid whitesmoke;
+  position: relative;
+}
+
+td,
+th {
+  padding: 10px 0;
+}
+
+.info-team,
+.info-vs {
+  border: none;
+}
+
+.info-vs {
+  text-transform: uppercase;
+}
+
+.info-seed {
+  background: whitesmoke;
+  color: #333;
+  padding: 10px;
+  position: absolute;
+}
+
+.info-status {
+  background: #038eff;
+  border-radius: 0;
+  border: 2px solid whitesmoke;
+  padding: 10px 0;
+}
+
+.info-game-link {
+  color: whitesmoke;
+  text-decoration: none;
+}
+
+.info-game-link:hover,
+.info-game-link:active {
+  color: #5ebd89;
+}
+
+.info-if-nec {
+  border: none;
+  font-size: 12px;
+}
+
+.info-back-btn {
+  border: none;
 }
