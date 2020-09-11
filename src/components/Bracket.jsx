@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Round from './Round.jsx';
 import axios from 'axios';
 
-const Bracket = () => {
+const Bracket = ({ setSeriesClicked }) => {
   const [allMatches, setAllMatches] = useState([]);
 
   useEffect(() => {
@@ -31,10 +31,12 @@ const Bracket = () => {
       <Round
         round={1}
         matchups={allMatches.filter((match) => match.round === 1)}
+        setSeriesClicked={setSeriesClicked}
       />
       <Round
         round={2}
         matchups={allMatches.filter((match) => match.round === 2)}
+        setSeriesClicked={setSeriesClicked}
       />
       <Round
         round={3}
@@ -76,6 +78,7 @@ const Bracket = () => {
             seriesName: '',
           },
         ]}
+        setSeriesClicked={setSeriesClicked}
       />
       <Round
         round={4}
