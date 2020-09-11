@@ -1,5 +1,6 @@
 node_modules
 server/files
+server/config.js
 dist/bundle.js
 dist/images
 .DS_Store
