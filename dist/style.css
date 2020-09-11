@@ -57,6 +57,24 @@ body {
   padding-right: 1rem;
 }
 
+.nav {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  text-align: center;
+  width: 90%;
+  background-color: #999999;
+  margin: 0 auto;
+  cursor: default;
+}
+
+.nav-item {
+  flex: 1;
+  padding: 1.5rem 0;
+  text-transform: uppercase;
+  font-family: 'Oswald';
+}
+
 .bracket {
   display: flex;
   width: 90%;
