@@ -15,7 +15,7 @@ async function getScores(link) {
   await page.goto(`https://www.nba.com/playoffs/2020/${link}`);
 
   try {
-    var data = await page.$eval(
+    var scoreData = await page.$eval(
       '#gamedetails__matchup--series_tracker > div > div.small-12.medium-7.columns > div > table > tbody',
       (items) =>
         [...items.children].map((game) => {
@@ -33,17 +33,14 @@ async function getScores(link) {
     getScores(link);
   }
 
-  fs.writeFileSync(`${path}/${link}.json`, JSON.stringify(data, null, 2));
-
   browser.close();
 
-  editFile(`${link}.json`);
+  editData(scoreData);
 }
 
-function editFile(file) {
+function editData(data) {
   console.log('\n', 'editing scores...');
-  const readData = JSON.parse(fs.readFileSync(`${path}/${file}`, 'utf8'));
-  const newArr = [...readData];
+  const newArr = [...data];
 
   for (let i = 0; i < newArr.length; i++) {
     newArr[i].game = `game${newArr[i].game.split('')[1]}`;
@@ -65,45 +62,38 @@ function editFile(file) {
       delete newArr[i].date;
     }
   }
-  fs.writeFileSync(`${path}/${file}`, JSON.stringify(newArr, null, 2));
 
-  updateMainFile(`${path}/${file}`, `${path}/playoffs-all-series-2020.json`);
+  updateMainFile(`${path}/playoffs-all-series-2020.json`, newArr);
 }
 
-function updateMainFile(oldFile, playoffsFile) {
+function updateMainFile(playoffsFile, scoresArr) {
   console.log('\n', 'editing main playoffs file...');
-  const oldFileData = JSON.parse(fs.readFileSync(oldFile, 'utf8'));
   const playoffsData = JSON.parse(fs.readFileSync(playoffsFile, 'utf8'));
 
-  const seriesLink = `${oldFileData[0].score.homeTeam}${oldFileData[0].score.awayTeam}`.toLowerCase();
-  for (let i = 0; i < oldFileData.length; i++) {
-    const series = playoffsData.find(
-      (series) => series.seriesName === seriesLink
-    );
-    if (oldFileData[i].completed) {
+  const seriesName = `${scoresArr[0].score.homeTeam}${scoresArr[0].score.awayTeam}`.toLowerCase();
+  const series = playoffsData.find(
+    (series) => series.seriesName === seriesName
+  );
+  for (let i = 0; i < scoresArr.length; i++) {
+    if (scoresArr[i].completed) {
       series.games.forEach((game) => {
-        if (game.game === oldFileData[i].game) {
-          game.homeTeam = oldFileData[i].score.homeTeam;
-          game.homeScore = oldFileData[i].score.homeScore;
-          game.awayTeam = oldFileData[i].score.awayTeam;
-          game.awayScore = oldFileData[i].score.awayScore;
-          game.completed = oldFileData[i].completed;
+        if (game.game === scoresArr[i].game) {
+          game.homeTeam = scoresArr[i].score.homeTeam;
+          game.homeScore = scoresArr[i].score.homeScore;
+          game.awayTeam = scoresArr[i].score.awayTeam;
+          game.awayScore = scoresArr[i].score.awayScore;
+          game.completed = scoresArr[i].completed;
         }
       });
     }
   }
-
-  cleanup(oldFile);
+  calculateWins(series);
 
   fs.writeFileSync(playoffsFile, JSON.stringify(playoffsData, null, 2));
-
-  calculateWins(seriesLink, playoffsFile);
 }
 
-function calculateWins(series, playoffsFile) {
+function calculateWins(matchup) {
   console.log('\n', 'calculating each teams wins...');
-  const playoffs = JSON.parse(fs.readFileSync(playoffsFile, 'utf8'));
-  const matchup = playoffs.find((match) => match.seriesName === series);
 
   matchup.highSeed.wins = 0;
   matchup.lowSeed.wins = 0;
@@ -133,9 +123,7 @@ function calculateWins(series, playoffsFile) {
     matchup.seriesOver = true;
   }
 
-  fs.writeFileSync(playoffsFile, JSON.stringify(playoffs, null, 2));
-
-  console.log('\n', `${series} COMPLETED!`, '\n');
+  console.log('\n', `${matchup.seriesName} COMPLETED!`, '\n');
 }
 
 async function getAllScores(round) {
@@ -169,4 +157,4 @@ function cleanup(file) {
 }
 
 // getAllScores(2);
-getScores('westseries6');
+getScores('westseries5');
