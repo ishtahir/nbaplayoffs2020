@@ -1,7 +1,7 @@
 import React from 'react';
 import Matchup from './Matchup.jsx';
 
-const Round = ({ matchups, round }) => {
+const Round = ({ matchups, round, setSeriesClicked }) => {
   return (
     <div className={`col rd${round}`}>
       {matchups.map(({ conf, seriesName, highSeed, lowSeed }, i) => (
@@ -16,6 +16,8 @@ const Round = ({ matchups, round }) => {
           lowImg={`${lowSeed.short}.svg`}
           highMascot={highSeed.mascot}
           lowMascot={lowSeed.mascot}
+          seriesName={seriesName}
+          setSeriesClicked={setSeriesClicked}
         />
       ))}
     </div>
