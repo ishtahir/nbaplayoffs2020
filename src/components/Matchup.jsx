@@ -11,9 +11,11 @@ const Matchup = ({
   lowImg,
   highMascot,
   lowMascot,
+  seriesName,
+  setSeriesClicked,
 }) => (
   <div className='matchup'>
-    <ul className={conference}>
+    <ul className={conference} onClick={() => setSeriesClicked(seriesName)}>
       <Team
         seed={highSeed}
         img={highImg ? highImg : ''}
