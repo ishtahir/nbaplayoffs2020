@@ -1,8 +1,9 @@
 const fs = require('fs');
 
 const path = 'server/files';
+const playoffFile = `${path}/playoffs-all-series-2020.json`;
 
-const [westTeams, eastTeams, seedingOrder, checkStart] = JSON.parse(
+const [westTeams, eastTeams, seedingOrder, last] = JSON.parse(
   fs.readFileSync(`${path}/settings.json`, 'utf8')
 );
 
@@ -10,44 +11,67 @@ function writeFile(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-function createPlayoffMatchup(conf, round) {
-  const teams = conf === 'west' ? westTeams : eastTeams;
+function appendToFile(file, data) {
+  const dataArr = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (Array.isArray(data)) {
+    dataArr.push(...data);
+  } else {
+    dataArr.push(data);
+  }
+  writeFile(file, dataArr);
+}
+
+function isFileEmpty(file) {
+  const fileData = fs.readFileSync(file, 'utf8');
+  try {
+    const fileDataArray = JSON.parse(fileData);
+    return fileDataArray.length === 0 ? true : false;
+  } catch (err) {
+    console.log(
+      'Error occured. The file should contain at least an empty array.'
+    );
+  }
+}
+
+function createPlayoffMatchup(round) {
+  const teams = [...westTeams, ...eastTeams].filter(
+    (team) => team.eliminated === false
+  );
   const matchups = [];
   let seeding;
-  let matches;
   if (round === 1) {
     seeding = 'first';
-    matches = 4;
   } else if (round === 2) {
     seeding = 'second';
-    matches = 2;
   } else if (round === 3) {
     seeding = 'third';
-    matches = 1;
   }
 
-  for (let i = 0; i < matches; i++) {
+  while (teams.length) {
+    const currentTeam = teams[0];
+    const conf = currentTeam.conf;
     const series = {};
-    if (teams[i].eliminated) {
+    if (currentTeam.eliminated) {
       continue;
     }
     const nextUp = teams.filter(
       (team) =>
+        team.conf === currentTeam.conf &&
         team.eliminated === false &&
-        seedingOrder[teams[i].seed][seeding].includes(team.seed)
+        seedingOrder[currentTeam.seed][seeding].includes(team.seed)
     )[0];
 
     let highTeam;
     let lowTeam;
-    if (teams[i].seed < nextUp.seed) {
-      highTeam = teams[i];
+    if (currentTeam.seed < nextUp.seed) {
+      highTeam = currentTeam;
       lowTeam = nextUp;
     } else {
-      lowTeam = teams[i];
+      lowTeam = currentTeam;
       highTeam = nextUp;
     }
+
     series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
-    series.conf = conf;
     series.link = `${conf}series${highTeam.seed}`;
 
     series.highSeed = highTeam;
@@ -56,60 +80,48 @@ function createPlayoffMatchup(conf, round) {
     series.lowSeed = lowTeam;
     series.lowSeed.wins = 0;
 
+    series.games = [];
+
+    series.seriesOver = false;
+    series.round = round;
+
     for (let i = 1; i < 8; i++) {
-      series[`game${i}`] = {};
+      series.games.push({ game: `game${i}` });
     }
+
     matchups.push(series);
+
+    const index = teams.indexOf(nextUp);
+
+    teams.splice(index, 1);
+    teams.shift();
   }
 
-  writeFile(`${path}/${conf}round${round}.json`, matchups);
+  if (isFileEmpty(playoffFile)) {
+    writeFile(playoffFile, matchups);
+  } else if (!isFileEmpty(playoffFile) && round > last.lastRoundPushed) {
+    appendToFile(playoffFile, matchups);
+  }
+  updateSettings('last', round);
 }
 
-function createMainFileForRound(round) {
-  const allMatchups = [];
-  const westSeries = JSON.parse(
-    fs.readFileSync(`${path}/westround${round}.json`)
-  );
-  const eastSeries = JSON.parse(
-    fs.readFileSync(`${path}/eastround${round}.json`)
-  );
-  for (let series of westSeries) {
-    allMatchups.push(series);
-  }
-  for (let series of eastSeries) {
-    allMatchups.push(series);
-  }
-  writeFile(`${path}/playoffs-round${round}.json`, allMatchups);
-}
-
-function updateSettings(setting, options) {
+function updateSettings(teamData, conf) {
   const data = [];
-  if (setting === 'team') {
-    const teams = options.conf === 'west' ? westTeams : eastTeams;
-    const team = teams.find((team) => team.short === options.short);
+  if (teamData === 'last') {
+    last.lastRoundPushed = conf;
+  } else {
+    const teams = conf === 'west' ? westTeams : eastTeams;
+    const team = teams.find((team) => team.short === teamData.short);
     team.eliminated = true;
-  } else if (setting === 'start') {
-    checkStart.startFunction = true;
   }
-  data.push(westTeams, eastTeams, seedingOrder, checkStart);
+
+  data.push(westTeams, eastTeams, seedingOrder, last);
 
   writeFile(`${path}/settings.json`, data);
 }
 
-function start(round) {
-  createPlayoffMatchup('west', round);
-  createPlayoffMatchup('east', round);
-  createMainFileForRound(round);
-  updateSettings('start');
-  fs.unlinkSync(`${path}/eastround${round}.json`);
-  fs.unlinkSync(`${path}/westround${round}.json`);
-}
-
-if (!checkStart.startFunction) {
-  start(1);
-}
+// createPlayoffMatchup(2);
 
 module.exports = {
-  start,
   updateSettings,
 };
