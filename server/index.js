@@ -38,9 +38,9 @@ app.get('/series/:name', (req, res) => {
     );
 });
 
-app.get('/series/rd/:rd', (req, res) => {
+app.get('/series/', (req, res) => {
   nbaSeries
-    .find({ round: +req.params.rd })
+    .find({})
     .exec()
     .then((result) => {
       console.log('Success getting documents!');
