@@ -4,7 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const nbaSeries = require('./series.js');
-const { mongoPassword } = require('./config.js');
+const { mongoPassword, databaseName } = require('./config.js');
 const allSeries = JSON.parse(
   fs.readFileSync('server/files/playoffs-all-series-2020.json')
 );
@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.static('dist'));
 
 mongoose.connect(
-  `mongodb+srv://ish:${mongoPassword}@cluster0.acvuo.mongodb.net/<dbname>?retryWrites=true&w=majority`,
+  `mongodb+srv://ish:${mongoPassword}@cluster0.acvuo.mongodb.net/${databaseName}?retryWrites=true&w=majority`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -85,9 +85,13 @@ app.patch('/series/:name', (req, res) => {
   const matchup = allSeries.find(
     (match) => match.seriesName === req.params.name
   );
-  const games = matchup.games;
+  const changesObj = {};
+  // const changes = ['highSeed', 'lowSeed'];
+  for (const change of changes) {
+    changesObj[change] = matchup[change];
+  }
   nbaSeries
-    .updateOne({ seriesName: req.params.name }, { $set: { games: games } })
+    .updateOne({ seriesName: req.params.name }, { $set: changesObj })
     .exec()
     .then((result) => {
       console.log('Success updating document!');
