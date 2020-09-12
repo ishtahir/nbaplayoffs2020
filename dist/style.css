@@ -248,14 +248,14 @@ th {
   padding: 10px 0;
 }
 
-.info-game-link {
+.info-link {
   color: whitesmoke;
   text-decoration: none;
 }
 
-.info-game-link:hover,
-.info-game-link:active {
-  color: #5ebd89;
+.info-link:hover,
+.info-link:active {
+  color: #234567;
 }
 
 .info-if-nec {
