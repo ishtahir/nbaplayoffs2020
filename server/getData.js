@@ -3,8 +3,13 @@ const fs = require('fs');
 const { updateSettings } = require('./settings.js');
 
 const path = 'server/files';
+const playoffFile = `${path}/playoffs-all-series-2020.json`;
 
 async function getScores(link) {
+  if (checkToUpdate(playoffFile, link)) {
+    console.log(`${link} is up to date!`);
+    return;
+  }
   console.log('\n', 'getting the data...');
   const browser = await puppeteer.launch();
 
@@ -12,35 +17,35 @@ async function getScores(link) {
 
   page.setDefaultNavigationTimeout(0);
 
+  await page.setViewport({ width: 1366, height: 768 });
+
   await page.goto(`https://www.nba.com/playoffs/2020/${link}`);
 
   try {
-    var scoreData = await page.$eval(
-      '#gamedetails__matchup--series_tracker > div > div.small-12.medium-7.columns > div > table > tbody',
-      (items) =>
-        [...items.children].map((game) => {
-          const props = {};
-          props.game = game.cells[1].textContent;
-          props.score = game.cells[2].children[0].textContent;
-          props.channel = game.cells[3].textContent;
-          props.date = game.cells[4].children[0].textContent;
+    var scoreData = await page.$eval('table > tbody', (items) =>
+      [...items.children].map((game) => {
+        const props = {};
+        props.game = game.cells[1].textContent;
+        props.score = game.cells[2].children[0].textContent;
+        props.channel = game.cells[3].textContent;
+        props.date = game.cells[4].children[0].textContent;
 
-          return props;
-        })
+        return props;
+      })
     );
   } catch (err) {
     console.log("There was an error on NBA's side.");
     getScores(link);
   }
 
-  browser.close();
+  await browser.close();
 
   editData(scoreData);
 }
 
-function editData(data) {
+function editData(scores) {
   console.log('\n', 'editing scores...');
-  const newArr = [...data];
+  const newArr = [...scores];
 
   for (let i = 0; i < newArr.length; i++) {
     newArr[i].game = `game${newArr[i].game.split('')[1]}`;
@@ -63,7 +68,7 @@ function editData(data) {
     }
   }
 
-  updateMainFile(`${path}/playoffs-all-series-2020.json`, newArr);
+  updateMainFile(playoffFile, newArr);
 }
 
 function updateMainFile(playoffsFile, scoresArr) {
@@ -74,6 +79,7 @@ function updateMainFile(playoffsFile, scoresArr) {
   const series = playoffsData.find(
     (series) => series.seriesName === seriesName
   );
+
   for (let i = 0; i < scoresArr.length; i++) {
     if (scoresArr[i].completed) {
       series.games.forEach((game) => {
@@ -127,9 +133,7 @@ function calculateWins(matchup) {
 }
 
 async function getAllScores(round) {
-  const playoffsData = JSON.parse(
-    fs.readFileSync(`${path}/playoffs-all-series-2020.json`)
-  );
+  const playoffsData = JSON.parse(fs.readFileSync(playoffFile));
   let start, end;
   if (round === 1) {
     start = 1;
@@ -156,5 +160,12 @@ function cleanup(file) {
   }
 }
 
-// getAllScores(2);
-getScores('westseries5');
+function checkToUpdate(file, link) {
+  const seriesInQuestion = JSON.parse(fs.readFileSync(file)).find(
+    (series) => series.link === link
+  );
+  return seriesInQuestion.seriesOver;
+}
+
+// getAllScores(1);
+getScores('westseries6');
