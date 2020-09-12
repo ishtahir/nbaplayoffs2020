@@ -121,11 +121,11 @@ function calculateWins(matchup) {
 
   if (matchup.highSeed.wins === 4) {
     matchup.lowSeed.eliminated = true;
-    updateSettings(matchup.lowSeed, matchup.lowSeed.conf);
+    updateSettings('teamElim', { team: matchup.lowSeed });
     matchup.seriesOver = true;
   } else if (matchup.lowSeed.wins === 4) {
     matchup.highSeed.eliminated = true;
-    updateSettings(matchup.highSeed, matchup.highSeed.conf);
+    updateSettings('teamElim', { team: matchup.highSeed });
     matchup.seriesOver = true;
   }
 
@@ -158,4 +158,4 @@ function checkToUpdate(file, link) {
 }
 
 // getAllScores(1);
-getScores('westseries6');
+getScores('eastseries6');
