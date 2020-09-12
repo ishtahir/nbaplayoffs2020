@@ -38,7 +38,12 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
         </tr>
         <tr>
           <th colSpan='4' className='info-status'>
-            {setStatus()}
+            <a
+              className='info-link'
+              href={`https://www.nba.com/playoffs/2020/${series.link}`}
+            >
+              {setStatus()}
+            </a>
           </th>
         </tr>
       </thead>
@@ -47,13 +52,11 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
           <tr key={game.game}>
             <td className='info-game'>Game {i + 1}</td>
             <td colSpan='3' className='info-game-result'>
-              <a href='#' className='info-game-link'>
-                {!game.homeScore && !game.awayScore
-                  ? '*'
-                  : game.homeScore > game.awayScore
-                  ? `${game.homeTeam} ${game.homeScore}, ${game.awayTeam} ${game.awayScore}`
-                  : `${game.awayTeam} ${game.awayScore}, ${game.homeTeam} ${game.homeScore}`}
-              </a>
+              {!game.homeScore && !game.awayScore
+                ? '*'
+                : game.homeScore > game.awayScore
+                ? `${game.homeTeam} ${game.homeScore}, ${game.awayTeam} ${game.awayScore}`
+                : `${game.awayTeam} ${game.awayScore}, ${game.homeTeam} ${game.homeScore}`}
             </td>
           </tr>
         ))}
