@@ -134,17 +134,7 @@ function calculateWins(matchup) {
 
 async function getAllScores(round) {
   const playoffsData = JSON.parse(fs.readFileSync(playoffFile));
-  let start, end;
-  if (round === 1) {
-    start = 1;
-    end = 4;
-  } else if (round === 2) {
-    start = 5;
-    end = 6;
-  } else {
-    start = 7;
-    end = 7;
-  }
+
   for (const series of playoffsData) {
     if (series.round === round && !series.seriesOver) {
       await getScores(series.link);
