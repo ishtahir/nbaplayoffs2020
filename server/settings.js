@@ -39,12 +39,19 @@ function createPlayoffMatchup(round) {
   );
   const matchups = [];
   let seeding;
+  let linkStartWest, linkStartEast, linkText;
   if (round === 1) {
     seeding = 'first';
+    linkStartWest = 1;
+    linkStartEast = 1;
   } else if (round === 2) {
     seeding = 'second';
+    linkStartWest = 5;
+    linkStartEast = 5;
   } else if (round === 3) {
     seeding = 'third';
+    linkStartWest = 7;
+    linkStartEast = 7;
   }
 
   while (teams.length) {
@@ -72,7 +79,13 @@ function createPlayoffMatchup(round) {
     }
 
     series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
-    series.link = `${conf}series${highTeam.seed}`;
+
+    if (conf === 'west') {
+      linkText = `${conf}series${linkStartWest++}`;
+    } else {
+      linkText = `${conf}series${linkStartEast++}`;
+    }
+    series.link = linkText;
 
     series.highSeed = highTeam;
     series.highSeed.wins = 0;
