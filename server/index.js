@@ -86,7 +86,7 @@ app.patch('/series/:name', (req, res) => {
     (match) => match.seriesName === req.params.name
   );
   const changesObj = {};
-  // const changes = ['highSeed', 'lowSeed'];
+  const changes = ['seriesOver'];
   for (const change of changes) {
     changesObj[change] = matchup[change];
   }
