@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const axios = require('axios');
 const { updateSettings } = require('./settings.js');
 
 const path = 'server/files';
@@ -95,6 +96,15 @@ function updateMainFile(playoffsFile, scoresArr) {
   }
   calculateWins(series);
 
+  const obj = {
+    games: series.games,
+    highSeed: series.highSeed,
+    lowSeed: series.lowSeed,
+    seriesOver: series.seriesOver,
+  };
+
+  updateDatabase(seriesName, obj);
+
   fs.writeFileSync(playoffsFile, JSON.stringify(playoffsData, null, 2));
 }
 
@@ -150,6 +160,13 @@ function cleanup(file) {
   }
 }
 
+function updateDatabase(seriesName, obj) {
+  axios
+    .patch(`http://localhost:4501/series/${seriesName}`, obj)
+    .then((_) => console.log(`Success! Updated ${seriesName}!`))
+    .catch((_) => console.log(`There was an error updating ${seriesName}!`));
+}
+
 function checkToUpdate(file, link) {
   const seriesInQuestion = JSON.parse(fs.readFileSync(file)).find(
     (series) => series.link === link
@@ -158,4 +175,4 @@ function checkToUpdate(file, link) {
 }
 
 // getAllScores(1);
-getScores('eastseries6');
+getScores('westseries5');
