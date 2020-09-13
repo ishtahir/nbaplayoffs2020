@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { match } = require('assert');
 
 const path = 'server/files';
 const playoffFile = `${path}/playoffs-all-series-2020.json`;
@@ -147,7 +146,7 @@ function checkTeamEligibility(team) {
   return !squad.eliminated && allSeriesOver;
 }
 
-createPlayoffMatchup(3);
+// createPlayoffMatchup(3);
 
 module.exports = {
   updateSettings,
