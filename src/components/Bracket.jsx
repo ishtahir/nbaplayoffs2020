@@ -7,7 +7,7 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:4501/series/')
+      .get('/series')
       .then((data) => {
         const seeding = {};
         const order = [1, 4, 2, 3];
@@ -29,10 +29,6 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
       })
       .catch((err) => console.log(err));
   }, []);
-
-  useEffect(() => {
-    checkTheWins();
-  }, [allMatches]);
 
   return (
     <div className='bracket'>
