@@ -17,20 +17,26 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
 
         setAllMatches(
           data.data.sort((a, b) => {
-            if (a.highSeed.conf === b.highSeed.conf && a.round === b.round) {
+            if (a.highSeed.conf > b.highSeed.conf) {
+              return -1;
+            } else if (b.highSeed.conf > a.highSeed.conf) {
+              return 1;
+            } else {
               return seeding[a.highSeed.seed] - seeding[b.highSeed.seed];
             }
           })
         );
       })
-      .catch((err) => console.log);
+      .catch((err) => console.log(err));
   }, []);
-
+  console.log(allMatches.filter((team) => team.round === 1));
   return (
     <div className='bracket'>
       <Round
         round={1}
-        matchups={allMatches.filter((match) => match.round === 1)}
+        matchups={[
+          ...allMatches.sort((a, b) => a.highSeed.conf - b.highSeed.conf),
+        ].filter((match) => match.round === 1)}
         setSeriesClicked={setSeriesClicked}
         setSeries={setSeries}
       />
@@ -45,11 +51,11 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
         matchups={[
           {
             highSeed: {
-              city: '',
-              mascot: '',
-              short: '',
-              seed: '',
-              wins: '',
+              city: 'LA',
+              mascot: 'Lakers',
+              short: 'LAL',
+              seed: 1,
+              wins: 0,
               conf: 'west',
             },
             lowSeed: {
