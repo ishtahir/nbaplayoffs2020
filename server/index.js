@@ -4,9 +4,11 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const nbaSeries = require('./series.js');
-const { mongoPassword, databaseName } = require('./config.js');
-
-console.log('process ENV SON : ', process.env);
+// const { mongoPassword, databaseName } = require('./config.js');
+const mongoPassword =
+  process.env.mongoPassword || require('./config.js').mongoPassword;
+const databaseName =
+  process.env.databaseName || require('./config.js').databaseName;
 
 const allSeries = JSON.parse(
   fs.readFileSync('server/files/playoffs-all-series-2020.json')
