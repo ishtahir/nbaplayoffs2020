@@ -4,7 +4,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const nbaSeries = require('./series.js');
-const { mongoPassword, databaseName } = process.env || require('./config.js');
+const { mongoPassword, databaseName } = require('./config.js');
+
+console.log('process ENV SON : ', process.env);
 
 const allSeries = JSON.parse(
   fs.readFileSync('server/files/playoffs-all-series-2020.json')
@@ -55,13 +57,13 @@ app.get('/series/', (req, res) => {
 });
 
 app.post('/series/:name', (req, res) => {
-  const matchup = allSeries.find(
-    (match) => match.seriesName === req.params.name
-  );
+  // const matchup = allSeries.find(
+  //   (match) => match.seriesName === req.params.name
+  // );
 
-  const series = new nbaSeries(matchup);
+  const series = new nbaSeries(req.body);
   nbaSeries
-    .findOne({ seriesName: matchup.seriesName })
+    .findOne({ seriesName: req.params.name })
     .exec()
     .then((result) => {
       if (result === null) {
