@@ -86,8 +86,7 @@ app.patch('/series/:name', (req, res) => {
     (match) => match.seriesName === req.params.name
   );
   const changesObj = {};
-  const changes = ['seriesOver'];
-  for (const change of changes) {
+  for (const change of req.body) {
     changesObj[change] = matchup[change];
   }
   nbaSeries
