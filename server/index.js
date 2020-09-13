@@ -10,9 +10,9 @@ const mongoPassword =
 const databaseName =
   process.env.databaseName || require('./config.js').databaseName;
 
-const allSeries = JSON.parse(
-  fs.readFileSync('server/files/playoffs-all-series-2020.json')
-);
+// const allSeries = JSON.parse(
+//   fs.readFileSync('server/files/playoffs-all-series-2020.json')
+// );
 
 const app = express();
 
