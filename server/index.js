@@ -20,13 +20,16 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('dist'));
 
-mongoose.connect(
-  `mongodb+srv://ish:${mongoPassword}@cluster0.acvuo.mongodb.net/${databaseName}?retryWrites=true&w=majority`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose
+  .connect(
+    `mongodb+srv://ish:${mongoPassword}@cluster0.acvuo.mongodb.net/${databaseName}?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => console.log("Connected to Ish's MongoDB Atlas!"))
+  .catch(() => console.log("COULD NOT CONNECT TO ISH'S MONGO ATLAS!"));
 
 app.get('/series/:name', (req, res) => {
   nbaSeries
