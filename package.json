@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "dev": "NODE_ENV=production webpack -d --watch & live-server --port=9000 --watch=dist --open=dist",
-    "start": "nodemon server/index.js"
+    "start": "node server/index.js"
   },
   "keywords": [],
   "author": "Ish Tahir",
