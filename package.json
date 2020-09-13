@@ -5,11 +5,16 @@
   "main": "server/index.js",
   "scripts": {
     "dev": "NODE_ENV=production webpack -d --watch & live-server --port=9000 --watch=dist --open=dist",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "dep": "git push heroku master"
   },
   "keywords": [],
   "author": "Ish Tahir",
   "license": "ISC",
+  "engines": {
+    "node": "12.18.3",
+    "npm": "6.14.6"
+  },
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
