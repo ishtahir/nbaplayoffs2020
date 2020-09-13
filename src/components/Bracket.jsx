@@ -29,7 +29,11 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
       })
       .catch((err) => console.log(err));
   }, []);
-  console.log(allMatches.filter((team) => team.round === 1));
+
+  useEffect(() => {
+    checkTheWins();
+  }, [allMatches]);
+
   return (
     <div className='bracket'>
       <Round
