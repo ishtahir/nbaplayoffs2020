@@ -313,3 +313,43 @@ th {
     font-size: 1.8rem;
   }
 }
+
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .title {
+    font-size: 3.5rem;
+  }
+
+  .text-wng {
+    font-size: 1.9rem;
+  }
+
+  .bracket {
+    width: 100vw;
+    min-height: 10rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .col {
+    margin: 0 2rem !important;
+  }
+
+  .rd4 .matchup {
+    margin-right: 2rem;
+  }
+
+  .info-team-name {
+    font-size: 2rem;
+    margin-top: 2rem;
+  }
+
+  .info-seed {
+    padding: 6px;
+  }
+
+  .info-status {
+    padding: 10px;
+    font-size: 1.8rem;
+  }
+}
