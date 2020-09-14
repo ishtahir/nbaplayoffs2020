@@ -162,7 +162,7 @@ function cleanup(file) {
 
 function updateDatabase(seriesName, obj) {
   axios
-    .patch(`http://localhost:4501/series/${seriesName}`, obj)
+    .patch(`/series/${seriesName}`, obj)
     .then((_) => console.log(`Success! Updated ${seriesName}!`))
     .catch((_) => console.log(`There was an error updating ${seriesName}!`));
 }
@@ -175,4 +175,4 @@ function checkToUpdate(file, link) {
 }
 
 // getAllScores(1);
-getScores('westseries5');
+// getScores('westseries6');
