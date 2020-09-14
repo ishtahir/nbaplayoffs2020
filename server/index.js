@@ -16,8 +16,13 @@ const databaseName =
 
 const app = express();
 
+const corsOptions = {
+  origin: 'https://secret-gorge-48165.herokuapp.com/',
+  optionsSuccessStatus: 200,
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.static('dist'));
 
 mongoose
