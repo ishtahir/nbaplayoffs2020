@@ -291,7 +291,6 @@ th {
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
-    flex-direction: column;
   }
 
   .col {
