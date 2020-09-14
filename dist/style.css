@@ -108,6 +108,9 @@ body {
   height: 9rem;
   position: relative;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .matchup .west {
@@ -274,6 +277,7 @@ th {
   font-size: 1rem;
 }
 
+/* iPhone X, iPhone 11, iPhone 11 Pro Max */
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3),
   only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2),
   only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
@@ -299,6 +303,63 @@ th {
 
   .rd4 .matchup {
     margin-right: 2rem;
+  }
+
+  .info-team-name {
+    font-size: 2rem;
+    margin-top: 2rem;
+  }
+
+  .info-seed {
+    padding: 6px;
+  }
+
+  .info-status {
+    padding: 10px;
+    font-size: 1.8rem;
+  }
+}
+
+/* iPhone 6,7,8 */
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) {
+  .title {
+    font-size: 3rem;
+  }
+
+  .header {
+    width: 100vw;
+  }
+
+  .nav-item {
+    width: 100vw;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    z-index: 1;
+    margin-top: 2rem;
+  }
+
+  .bracket .col {
+    margin-right: 0;
+  }
+
+  .rd1 > .nav-item {
+    margin-top: 0;
+  }
+
+  .bracket {
+    width: 100vw;
+    min-height: 10rem;
+    flex-direction: column;
+  }
+
+  .matchup li {
+    width: 10rem;
+    height: 10rem;
+  }
+
+  .team img {
+    width: 7rem;
   }
 
   .info-team-name {
