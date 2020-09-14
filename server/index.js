@@ -3,16 +3,12 @@ const fs = require('fs');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const nbaSeries = require('./series.js');
-// const { mongoPassword, databaseName } = require('./config.js');
+const { nbaSeries, settingsForPlayoffs } = require('./schemas.js');
+
 const mongoPassword =
   process.env.mongoPassword || require('./config.js').mongoPassword;
 const databaseName =
   process.env.databaseName || require('./config.js').databaseName;
-
-// const allSeries = JSON.parse(
-//   fs.readFileSync('server/files/playoffs-all-series-2020.json')
-// );
 
 const app = express();
 
@@ -64,6 +60,21 @@ app.get('/series/:conf/:link', async (req, res) => {
 app.get('/series/', (req, res) => {
   nbaSeries
     .find({})
+    .exec()
+    .then((result) => {
+      console.log(`Success getting all documents`);
+      res.status(200).json(result);
+    })
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ error: err, message: `Error getting all documents` })
+    );
+});
+
+app.get('/team/:name', (req, res) => {
+  nbaSeries
+    .find({ seriesName: new RegExp(req.params.name) })
     .exec()
     .then((result) => {
       console.log(`Success getting all documents`);
@@ -148,6 +159,81 @@ app.delete('/series/:name', (req, res) => {
       res.status(500).json({
         error: err,
         message: `Error deleting document: ${req.params.name}`,
+      })
+    );
+});
+
+/*
+
+SETTINGS ROUTES BELOW
+
+*/
+
+app.post('/settings', (req, res) => {
+  const settings = new settingsForPlayoffs(req.body);
+  settings
+    .save()
+    .then((_) => {
+      res.status(200).json({
+        message: `Success creating settings document`,
+      });
+    })
+    .catch((err) =>
+      res.status(500).json({
+        error: err,
+        message: `Error creating settings document`,
+      })
+    );
+});
+
+app.get('/settings', (req, res) => {
+  settingsForPlayoffs
+    .findOne({ typeName: 'SETTINGS' })
+    .exec()
+    .then((result) => {
+      console.log('Success getting settings document!');
+      res.status(200).json(result);
+    })
+    .catch((err) =>
+      res.status(500).json({
+        error: err,
+        message: 'Could not properly get settings document!',
+      })
+    );
+});
+
+app.patch('/settings', (req, res) => {
+  settingsForPlayoffs
+    .updateOne({ typeName: 'SETTINGS' }, { $set: req.body })
+    .exec()
+    .then((result) =>
+      res.status(200).json({
+        message: `Success updating settings document`,
+        res: result,
+      })
+    )
+    .catch((err) =>
+      res.status(500).json({
+        error: err,
+        message: `Error updating settings document`,
+      })
+    );
+});
+
+app.delete('/settings', (req, res) => {
+  nbaSeries
+    .remove({ typeName: 'SETTINGS' })
+    .exec()
+    .then((result) =>
+      res.status(200).json({
+        message: `Success deleting settings document`,
+        res: result,
+      })
+    )
+    .catch((err) =>
+      res.status(500).json({
+        error: err,
+        message: `Error deleting settings document`,
       })
     );
 });
