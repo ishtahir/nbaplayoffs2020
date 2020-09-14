@@ -5,43 +5,47 @@ const { updateSettings } = require('./settings.js');
 
 const path = 'server/files';
 const playoffFile = `${path}/playoffs-all-series-2020.json`;
+const baseUrl = 'http://localhost:4501';
 
 async function getScores(link) {
-  if (checkToUpdate(playoffFile, link)) {
-    console.log(`${link} is up to date!`);
-    return;
-  }
-  console.log('\n', 'getting the data...');
-  const browser = await puppeteer.launch();
+  checkToUpdate(link.split('series').join('/')).then(async (series) => {
+    if (series.seriesOver) {
+      console.log(`${series.seriesName} is over and up to date.`);
+      return;
+    } else {
+      console.log('\n', 'getting the data...');
+      const browser = await puppeteer.launch();
 
-  const page = await browser.newPage();
+      const page = await browser.newPage();
 
-  page.setDefaultNavigationTimeout(0);
+      page.setDefaultNavigationTimeout(0);
 
-  await page.setViewport({ width: 1366, height: 768 });
+      await page.setViewport({ width: 1366, height: 768 });
 
-  await page.goto(`https://www.nba.com/playoffs/2020/${link}`);
+      await page.goto(`https://www.nba.com/playoffs/2020/${link}`);
 
-  try {
-    var scoreData = await page.$eval('table > tbody', (items) =>
-      [...items.children].map((game) => {
-        const props = {};
-        props.game = game.cells[1].textContent;
-        props.score = game.cells[2].children[0].textContent;
-        props.channel = game.cells[3].textContent;
-        props.date = game.cells[4].children[0].textContent;
+      try {
+        var scoreData = await page.$eval('table > tbody', (items) =>
+          [...items.children].map((game) => {
+            const props = {};
+            props.game = game.cells[1].textContent;
+            props.score = game.cells[2].children[0].textContent;
+            props.channel = game.cells[3].textContent;
+            props.date = game.cells[4].children[0].textContent;
 
-        return props;
-      })
-    );
-  } catch (err) {
-    console.log("There was an error on NBA's side.");
-    getScores(link);
-  }
+            return props;
+          })
+        );
+      } catch (err) {
+        console.log("There was an error on NBA's side.");
+        getScores(link);
+      }
 
-  await browser.close();
+      await browser.close();
 
-  editData(scoreData);
+      editData(scoreData);
+    }
+  });
 }
 
 function editData(scores) {
@@ -162,17 +166,18 @@ function cleanup(file) {
 
 function updateDatabase(seriesName, obj) {
   axios
-    .patch(`/series/${seriesName}`, obj)
+    .patch(`${baseUrl}/series/${seriesName}`, obj)
     .then((_) => console.log(`Success! Updated ${seriesName}!`))
     .catch((_) => console.log(`There was an error updating ${seriesName}!`));
 }
 
-function checkToUpdate(file, link) {
-  const seriesInQuestion = JSON.parse(fs.readFileSync(file)).find(
-    (series) => series.link === link
-  );
-  return seriesInQuestion.seriesOver;
+async function checkToUpdate(seriesLink) {
+  try {
+    const result = await axios.get(`${baseUrl}/series/${seriesLink}`);
+    return result.data;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
-// getAllScores(1);
-// getScores('westseries6');
+getScores('westseries6');
