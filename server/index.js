@@ -31,9 +31,24 @@ mongoose
   .then(() => console.log("Connected to Ish's MongoDB Atlas!"))
   .catch(() => console.log("COULD NOT CONNECT TO ISH'S MONGO ATLAS!"));
 
-app.get('/series/:name', (req, res) => {
+app.get('/series/:name', async (req, res) => {
   nbaSeries
     .findOne({ seriesName: req.params.name })
+    .exec()
+    .then((result) => {
+      console.log('Success getting document!');
+      res.status(200).json(result);
+    })
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ error: err, message: 'Could not properly get document!' })
+    );
+});
+
+app.get('/series/:conf/:link', async (req, res) => {
+  nbaSeries
+    .findOne({ link: `${req.params.conf}series${req.params.link}` })
     .exec()
     .then((result) => {
       console.log('Success getting document!');
