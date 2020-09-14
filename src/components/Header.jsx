@@ -1,5 +1,4 @@
 import React from 'react';
-import Nav from './Nav.jsx';
 
 const Header = () => (
   <>
@@ -11,7 +10,6 @@ const Header = () => (
         <span className='text-wng'>#WholeNewGame</span>
       </h1>
     </header>
-    <Nav />
   </>
 );
 
