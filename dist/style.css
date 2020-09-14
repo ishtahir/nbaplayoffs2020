@@ -60,12 +60,12 @@ body {
 
 .nav {
   display: flex;
+  width: 90%;
+  margin: 0 auto;
   justify-content: center;
   list-style: none;
   text-align: center;
-  width: 90%;
   background-color: #999999;
-  margin: 0 auto;
   cursor: default;
 }
 
@@ -265,4 +265,44 @@ th {
 
 .info-back-btn {
   border: none;
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
+  .title {
+    font-size: 3.5rem;
+  }
+
+  .text-wng {
+    font-size: 1.9rem;
+  }
+
+  .nav {
+  }
+
+  .nav-item {
+  }
+
+  .bracket {
+    width: 95vw;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .col {
+    margin: 0 15px;
+  }
+
+  .info-team-name {
+    font-size: 2rem;
+  }
+
+  .info-seed {
+    padding: 6px;
+  }
+
+  .info-status {
+    padding: 10px;
+    font-size: 1.8rem;
+  }
 }
