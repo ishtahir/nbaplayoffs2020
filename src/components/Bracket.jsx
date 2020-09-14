@@ -7,7 +7,7 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
 
   useEffect(() => {
     axios
-      .get('https://secret-gorge-48165.herokuapp.com//series')
+      .get('https://secret-gorge-48165.herokuapp.com/series')
       .then((data) => {
         const seeding = {};
         const order = [1, 4, 2, 3];
@@ -34,9 +34,7 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
     <div className='bracket'>
       <Round
         round={1}
-        matchups={[
-          ...allMatches.sort((a, b) => a.highSeed.conf - b.highSeed.conf),
-        ].filter((match) => match.round === 1)}
+        matchups={allMatches.filter((match) => match.round === 1)}
         setSeriesClicked={setSeriesClicked}
         setSeries={setSeries}
       />
