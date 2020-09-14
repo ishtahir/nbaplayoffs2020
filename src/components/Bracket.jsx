@@ -7,7 +7,7 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
 
   useEffect(() => {
     axios
-      .get('/series')
+      .get('https://secret-gorge-48165.herokuapp.com//series')
       .then((data) => {
         const seeding = {};
         const order = [1, 4, 2, 3];
