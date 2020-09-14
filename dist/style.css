@@ -61,15 +61,12 @@ body {
 .nav-item {
   display: inline-block;
   width: 100%;
+  margin-bottom: 2rem;
   padding: 1.5rem 0;
   text-transform: uppercase;
   text-align: center;
   font-family: 'Oswald';
   background-color: #999;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
-  z-index: 1;
 }
 
 .bracket {
@@ -256,6 +253,25 @@ th {
 
 .back-btn:active {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+  background: #000;
+  color: whitesmoke;
+  width: 100%;
+  margin-top: 2rem;
+  padding: 2rem 0;
+  text-align: center;
+  font-family: 'Alata';
+}
+
+.footer-reg {
+  display: inline-block;
+  padding: 5px 0;
+}
+
+.footer-small {
+  font-size: 1rem;
 }
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
