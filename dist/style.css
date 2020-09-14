@@ -58,22 +58,18 @@ body {
   padding-right: 1rem;
 }
 
-.nav {
-  display: flex;
-  width: 90%;
-  margin: 0 auto;
-  justify-content: center;
-  list-style: none;
-  text-align: center;
-  background-color: #999999;
-  cursor: default;
-}
-
 .nav-item {
-  flex: 1;
+  display: inline-block;
+  width: 100%;
   padding: 1.5rem 0;
   text-transform: uppercase;
+  text-align: center;
   font-family: 'Oswald';
+  background-color: #999;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .bracket {
@@ -111,18 +107,18 @@ body {
 
 .matchup li {
   padding: 5px 10px;
-  width: 50px;
-  height: 80px;
+  width: 6rem;
+  height: 9rem;
   position: relative;
   cursor: pointer;
 }
 
 .matchup .west {
-  background: #ffd0d0;
+  background: #fab8b8;
 }
 
 .matchup .east {
-  background: #cbcbff;
+  background: #b6b6ff;
 }
 
 .matchup .finals {
@@ -151,7 +147,7 @@ body {
 }
 
 .team img {
-  width: 55px;
+  width: 6rem;
 }
 
 .wins {
@@ -162,35 +158,8 @@ body {
   display: block;
   text-align: center;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  width: 40px;
-  position: absolute;
-  bottom: 5px;
-}
-
-p {
-  text-align: center;
-}
-
-.back-btn {
-  cursor: pointer;
-  border: 1px solid #5ebd89;
-  background-color: transparent;
-  padding: 15px 25px;
-  border-radius: 5px;
-  color: #5ebd89;
-  font-size: 20px;
-  margin: 20px 0;
-  outline: none;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-}
-
-.back-btn:hover {
-  background-color: #5ebd89;
-  color: #000;
-}
-
-.back-btn:active {
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  width: 50px;
+  margin: 0 auto;
 }
 
 table {
@@ -267,6 +236,28 @@ th {
   border: none;
 }
 
+.back-btn {
+  cursor: pointer;
+  border: 1px solid #5ebd89;
+  background-color: transparent;
+  padding: 15px 25px;
+  border-radius: 5px;
+  color: #5ebd89;
+  font-size: 20px;
+  margin: 20px 0;
+  outline: none;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.back-btn:hover {
+  background-color: #5ebd89;
+  color: #000;
+}
+
+.back-btn:active {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait) {
   .title {
     font-size: 3.5rem;
@@ -276,25 +267,25 @@ th {
     font-size: 1.9rem;
   }
 
-  .nav {
-  }
-
-  .nav-item {
-  }
-
   .bracket {
-    width: 95vw;
+    width: 100vw;
+    min-height: 10rem;
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
   }
 
   .col {
-    margin: 0 15px;
+    margin: 0 2rem !important;
+  }
+
+  .rd4 .matchup {
+    margin-right: 2rem;
   }
 
   .info-team-name {
     font-size: 2rem;
+    margin-top: 2rem;
   }
 
   .info-seed {
