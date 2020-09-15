@@ -7,7 +7,8 @@ html {
 
 body {
   margin: 0;
-  box-sizing: border-box;
+  width: 100%;
+  box-sizing: content-box;
   background: #333;
   color: whitesmoke;
   font-size: 1.6rem;
@@ -58,17 +59,6 @@ body {
   padding-right: 1rem;
 }
 
-.nav-item {
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 2rem;
-  padding: 1.5rem 0;
-  text-transform: uppercase;
-  text-align: center;
-  font-family: 'Oswald';
-  background-color: #999;
-}
-
 .bracket {
   display: flex;
   width: 90%;
@@ -82,8 +72,23 @@ body {
   flex-direction: column;
 }
 
-.col:not(:last-child) {
+/* .col:not(:last-child) {
   margin-right: 20px;
+} */
+
+.nav-item {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
+  text-transform: uppercase;
+  text-align: center;
+  font-family: 'Oswald';
+  background-color: #999;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .matchup {
@@ -100,6 +105,7 @@ body {
   border: 2px solid #f5f5f5;
   border-radius: 5px;
   display: flex;
+  position: relative;
 }
 
 .matchup li {
@@ -114,11 +120,11 @@ body {
 }
 
 .matchup .west {
-  background: #fab8b8;
+  background: linear-gradient(45deg, #fd5858, #fab8b8);
 }
 
 .matchup .east {
-  background: #b6b6ff;
+  background: linear-gradient(-45deg, #9ed3ff, #038eff);
 }
 
 .matchup .finals {
@@ -162,12 +168,15 @@ body {
   margin: 0 auto;
 }
 
+.hide {
+  display: none;
+}
+
 table {
   position: relative;
 }
 
 table,
-td,
 th {
   border: 1px solid whitesmoke;
   border-radius: 5px;
@@ -180,6 +189,19 @@ table {
   font-family: 'Grandstander', cursive;
   border: 2px solid whitesmoke;
   position: relative;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #aaa;
+  color: #333;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #888;
+}
+
+tr {
+  border-collapse: collapse;
 }
 
 td,
@@ -277,32 +299,31 @@ th {
   font-size: 1rem;
 }
 
-/* iPhone X, iPhone 11, iPhone 11 Pro Max */
-@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3),
-  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2),
-  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
+/* iPhone 6,7,8 */
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
   .title {
-    font-size: 3.5rem;
+    font-size: 3rem;
   }
 
-  .text-wng {
-    font-size: 1.9rem;
+  .nav-item {
+    width: 100%;
+    margin-top: 2rem;
   }
 
   .bracket {
-    width: 100vw;
+    width: 100%;
     min-height: 10rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
+    flex-direction: column;
+    margin: 0;
   }
 
-  .col {
-    margin: 0 2rem !important;
+  .matchup li {
+    width: 10rem;
+    height: 10rem;
   }
 
-  .rd4 .matchup {
-    margin-right: 2rem;
+  .team img {
+    width: 7rem;
   }
 
   .info-team-name {
@@ -320,47 +341,50 @@ th {
   }
 }
 
-/* iPhone 6,7,8 */
-@media only screen and (min-device-width: 375px) and (max-device-width: 667px) {
+/* iPhone X, iPhone 11, iPhone 11 Pro Max */
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-device-pixel-ratio: 3),
+  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2),
+  only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
   .title {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
 
-  .header {
-    width: 100vw;
-  }
-
-  .nav-item {
-    width: 100vw;
-    position: sticky;
-    position: -webkit-sticky;
-    top: 0;
-    z-index: 1;
-    margin-top: 2rem;
-  }
-
-  .bracket .col {
-    margin-right: 0;
-  }
-
-  .rd1 > .nav-item {
-    margin-top: 0;
+  .text-wng {
+    font-size: 1.9rem;
   }
 
   .bracket {
-    width: 100vw;
+    width: calc(100% - 20px);
+    /* max-width: 100%; */
+    /* width: 100%; */
+    margin: 0;
     min-height: 10rem;
-    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    flex-direction: row;
+  }
+
+  .bracket .col {
+    margin: 0 2rem;
+  }
+
+  .nav-item {
+    width: 100%;
   }
 
   .matchup li {
-    width: 10rem;
-    height: 10rem;
+    width: 6rem;
+    height: 9rem;
   }
 
   .team img {
-    width: 7rem;
+    width: 6rem;
   }
+
+  /* .rd4 .matchup {
+    margin-right: 2rem;
+  } */
 
   .info-team-name {
     font-size: 2rem;
