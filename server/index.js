@@ -202,6 +202,27 @@ app.get('/settings', (req, res) => {
     );
 });
 
+app.get('/settings/:team', (req, res) => {
+  settingsForPlayoffs
+    .findOne({ typeName: 'SETTINGS' })
+    .exec()
+    .then((result) => {
+      // console.log('Success getting settings document!');
+      const { westTeams, eastTeams } = result;
+      const teams = [...westTeams, ...eastTeams];
+      const team = teams.filter(
+        (team) => team.short === req.params.team.toUpperCase()
+      );
+      res.status(200).json(team[0]);
+    })
+    .catch((err) =>
+      res.status(500).json({
+        error: err,
+        message: 'Could not properly get settings document!',
+      })
+    );
+});
+
 app.patch('/settings', (req, res) => {
   settingsForPlayoffs
     .updateOne({ typeName: 'SETTINGS' }, { $set: req.body })
