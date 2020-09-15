@@ -13,7 +13,7 @@ const Team = ({ seed, img, mascot, wins, high }) => {
           alt={mascot ? `${mascot} Logo` : ''}
         />
       </span>
-      <span className='wins'>{wins}</span>
+      <span className={wins === '' ? 'wins hide' : 'wins'}>{wins}</span>
     </li>
   );
 };
