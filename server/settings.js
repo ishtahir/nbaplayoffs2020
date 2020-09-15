@@ -1,68 +1,47 @@
 const fs = require('fs');
+const axios = require('axios');
 
 const path = 'server/files';
 const playoffFile = `${path}/playoffs-all-series-2020.json`;
+const baseUrl = 'http://localhost:4501';
 
-const [westTeams, eastTeams, seedingOrder, last] = JSON.parse(
-  fs.readFileSync(`${path}/settings.json`, 'utf8')
-);
+// const [westTeams, eastTeams, seedingOrder, last] = JSON.parse(
+//   fs.readFileSync(`${path}/settings.json`, 'utf8')
+// );
 
-function writeFile(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
-
-function appendToFile(file, data) {
-  const dataArr = JSON.parse(fs.readFileSync(file, 'utf8'));
-  if (Array.isArray(data)) {
-    dataArr.push(...data);
-  } else {
-    dataArr.push(data);
-  }
-  writeFile(file, dataArr);
-}
-
-function isFileEmpty(file) {
-  const fileData = fs.readFileSync(file, 'utf8');
-  try {
-    const fileDataArray = JSON.parse(fileData);
-    return fileDataArray.length === 0 ? true : false;
-  } catch (err) {
-    console.log(
-      'Error occured. The file should contain at least an empty array.'
-    );
-  }
-}
-
-function createPlayoffMatchup(round) {
+async function determineMatchup(round) {
+  const settings = await axios.get(`${baseUrl}/settings`);
+  const { westTeams, eastTeams, seedingOrder, last } = settings.data;
+  const allSeriesData = await axios.get(`${baseUrl}/series`);
+  const allSeries = allSeriesData.data;
+  // const allSeries = JSON.parse(fs.readFileSync(playoffFile));
   const teams = [...westTeams, ...eastTeams].filter((team) =>
-    checkTeamEligibility(team)
+    checkTeamEligibility(team, allSeries)
   );
+  if (teams.length % 2 !== 0) {
+    console.log(
+      "Waiting for other series to finish. Can't make a series with one team."
+    );
+    return;
+  }
   const matchups = [];
-  let seeding, linkStartWest, linkStartEast, linkText, lastConf;
+  let seeding, lastConf, isFinals;
   if (round === 1) {
     seeding = 'first';
-    linkStartWest = 1;
-    linkStartEast = 1;
   } else if (round === 2) {
     seeding = 'second';
-    linkStartWest = 5;
-    linkStartEast = 5;
   } else if (round === 3) {
     seeding = 'third';
-    linkStartWest = 7;
-    linkStartEast = 7;
   }
+
+  isFinals = round === 4;
 
   while (teams.length) {
     const currentTeam = teams[0];
 
-    const conf = currentTeam.conf;
-    const series = {};
-
     const nextUp = teams.filter(
       (team) =>
         team.conf === currentTeam.conf &&
-        team.eliminated === false &&
         seedingOrder[currentTeam.seed][seeding].includes(team.seed)
     )[0];
 
@@ -75,46 +54,67 @@ function createPlayoffMatchup(round) {
       highTeam = nextUp;
     }
 
-    series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
-
-    if (conf === 'west') {
-      linkText = `${conf}series${linkStartWest++}`;
-    } else {
-      linkText = `${conf}series${linkStartEast++}`;
-    }
-    series.link = linkText;
-
-    series.highSeed = highTeam;
-    series.highSeed.wins = 0;
-
-    series.lowSeed = lowTeam;
-    series.lowSeed.wins = 0;
-
-    series.games = [];
-
-    series.seriesOver = false;
-    series.round = round;
-
-    for (let i = 1; i < 8; i++) {
-      series.games.push({ game: `game${i}` });
-    }
-
-    matchups.push(series);
-
-    lastConf = conf;
+    matchups.push([highTeam, lowTeam, round, isFinals]);
 
     const index = teams.indexOf(nextUp);
 
     teams.splice(index, 1);
     teams.shift();
   }
+  // console.log(matchups);
+  matchups.forEach((match) => createPlayoffMatchup(...match));
+}
 
-  if (isFileEmpty(playoffFile)) {
-    writeFile(playoffFile, matchups);
-  } else if (!isFileEmpty(playoffFile) && round > last.lastRoundPushed) {
-    appendToFile(playoffFile, matchups);
+determineMatchup(3);
+
+function createPlayoffMatchup(highTeam, lowTeam, round, finals = false) {
+  if (round === 1) {
+    linkStartWest = 1;
+    linkStartEast = 1;
+  } else if (round === 2) {
+    linkStartWest = 5;
+    linkStartEast = 5;
+  } else if (round === 3) {
+    linkStartWest = 7;
+    linkStartEast = 7;
+  } else {
+    linkStart = 8;
   }
-  updateSettings('last', { round, conf: lastConf });
+
+  const conf = finals ? 'finals' : highTeam.conf;
+  const series = {};
+
+  series.seriesName = `${highTeam.short}${lowTeam.short}`.toLowerCase();
+
+  if (finals) {
+    linkText = `${conf}series${linkStart}`;
+  } else {
+    if (conf === 'west') {
+      linkText = `${conf}series${linkStartWest++}`;
+    } else {
+      linkText = `${conf}series${linkStartEast++}`;
+    }
+  }
+  series.link = linkText;
+
+  series.highSeed = highTeam;
+  series.highSeed.wins = 0;
+
+  series.lowSeed = lowTeam;
+  series.lowSeed.wins = 0;
+
+  series.games = [];
+
+  series.seriesOver = false;
+  series.round = round;
+
+  for (let i = 1; i < 8; i++) {
+    series.games.push({ game: `game${i}` });
+  }
+
+  // console.log(series);
+  postToDatabase(series);
+  return series;
 }
 
 function updateSettings(setting, options) {
@@ -135,18 +135,19 @@ function updateSettings(setting, options) {
   writeFile(`${path}/settings.json`, data);
 }
 
-function checkTeamEligibility(team) {
-  const confTeams = team.conf === 'west' ? westTeams : eastTeams;
-  const squad = confTeams.find((squad) => squad.mascot === team.mascot);
-
-  const allSeriesOver = JSON.parse(fs.readFileSync(playoffFile))
-    .filter((matches) => matches.seriesName.includes(team.short.toLowerCase()))
-    .every((match) => match.seriesOver);
-
-  return !squad.eliminated && allSeriesOver;
+function checkTeamEligibility(team, allSeries) {
+  const teamSeries = allSeries.filter((series) =>
+    series.seriesName.includes(team.short.toLowerCase())
+  );
+  return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
-// createPlayoffMatchup(3);
+function postToDatabase(series) {
+  axios
+    .post(`${baseUrl}/series/${series.seriesName}`, series)
+    .then((result) => console.log(result.message))
+    .catch((err) => console.log(err));
+}
 
 module.exports = {
   updateSettings,
