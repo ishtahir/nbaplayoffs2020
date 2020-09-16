@@ -88,10 +88,6 @@ app.get('/team/:name', (req, res) => {
 });
 
 app.post('/series/:name', (req, res) => {
-  // const matchup = allSeries.find(
-  //   (match) => match.seriesName === req.params.name
-  // );
-
   const series = new nbaSeries(req.body);
   nbaSeries
     .findOne({ seriesName: req.params.name })
@@ -120,14 +116,6 @@ app.post('/series/:name', (req, res) => {
 });
 
 app.patch('/series/:name', (req, res) => {
-  // const matchup = allSeries.find(
-  //   (match) => match.seriesName === req.params.name
-  // );
-  // const changesObj = {};
-  // for (const change of req.body) {
-  //   changesObj[change] = matchup[change];
-  // }
-  // console.log(changesObj);
   nbaSeries
     .updateOne({ seriesName: req.params.name }, { $set: req.body })
     .exec()
@@ -239,6 +227,36 @@ app.patch('/settings', (req, res) => {
         message: `Error updating settings document`,
       })
     );
+});
+
+app.patch('/settings/:team', (req, res) => {
+  settingsForPlayoffs
+    .findOne({ typeName: 'SETTINGS' })
+    .exec()
+    .then((result) => {
+      const { westTeams, eastTeams } = result;
+      const teams = [...westTeams, ...eastTeams];
+      for (const team of teams) {
+        if (team.short === req.params.team.toUpperCase() && !team.eliminated) {
+          team.eliminated = true;
+        }
+      }
+      settingsForPlayoffs
+        .updateOne({ typeName: 'SETTINGS' }, { $set: { westTeams, eastTeams } })
+        .exec()
+        .then((result) =>
+          res.status(200).json({
+            message: `Success updating settings document`,
+            res: result,
+          })
+        )
+        .catch((err) =>
+          res.status(500).json({
+            error: err,
+            message: `Error updating settings document`,
+          })
+        );
+    });
 });
 
 app.delete('/settings', (req, res) => {
