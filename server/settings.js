@@ -1,20 +1,13 @@
-const fs = require('fs');
 const axios = require('axios');
 
-const path = 'server/files';
-const playoffFile = `${path}/playoffs-all-series-2020.json`;
 const baseUrl = 'http://localhost:4501';
-
-// const [westTeams, eastTeams, seedingOrder, last] = JSON.parse(
-//   fs.readFileSync(`${path}/settings.json`, 'utf8')
-// );
 
 async function determineMatchup(round) {
   const settings = await axios.get(`${baseUrl}/settings`);
   const { westTeams, eastTeams, seedingOrder, last } = settings.data;
   const allSeriesData = await axios.get(`${baseUrl}/series`);
   const allSeries = allSeriesData.data;
-  // const allSeries = JSON.parse(fs.readFileSync(playoffFile));
+
   const teams = [...westTeams, ...eastTeams].filter((team) =>
     checkTeamEligibility(team, allSeries)
   );
@@ -61,7 +54,6 @@ async function determineMatchup(round) {
     teams.splice(index, 1);
     teams.shift();
   }
-  // console.log(matchups);
   matchups.forEach((match) => createPlayoffMatchup(...match));
 }
 
@@ -112,27 +104,8 @@ function createPlayoffMatchup(highTeam, lowTeam, round, finals = false) {
     series.games.push({ game: `game${i}` });
   }
 
-  // console.log(series);
   postToDatabase(series);
   return series;
-}
-
-function updateSettings(setting, options) {
-  const data = [];
-  if (setting === 'last') {
-    last.lastRoundPushed = options.round;
-    if (last.lastConferencePushed.length < 2 && options.conf) {
-      last.lastConferencePushed.push(options.conf);
-    }
-  } else if (setting === 'teamElim') {
-    const teams = options.team.conf === 'west' ? westTeams : eastTeams;
-    const team = teams.find((team) => team.short === options.team.short);
-    team.eliminated = true;
-  }
-
-  data.push(westTeams, eastTeams, seedingOrder, last);
-
-  writeFile(`${path}/settings.json`, data);
 }
 
 function checkTeamEligibility(team, allSeries) {
@@ -148,7 +121,3 @@ function postToDatabase(series) {
     .then((result) => console.log(result.message))
     .catch((err) => console.log(err));
 }
-
-module.exports = {
-  updateSettings,
-};
