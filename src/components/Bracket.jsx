@@ -46,27 +46,7 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
       />
       <Round
         round={3}
-        matchups={[
-          {
-            highSeed: {
-              city: 'LA',
-              mascot: 'Lakers',
-              short: 'LAL',
-              seed: 1,
-              wins: 0,
-              conf: 'west',
-            },
-            lowSeed: {
-              city: '',
-              mascot: '',
-              short: '',
-              seed: '',
-              wins: '',
-            },
-            seriesName: '',
-          },
-          ...allMatches.filter((match) => match.round === 3),
-        ]}
+        matchups={allMatches.filter((match) => match.round === 3)}
         setSeriesClicked={setSeriesClicked}
         setSeries={setSeries}
       />
