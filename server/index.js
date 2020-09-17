@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const { nbaSeries, settingsForPlayoffs } = require('./schemas.js');
+require('./getData.js');
 
 const mongoPassword =
   process.env.mongoPassword || require('./config.js').mongoPassword;
