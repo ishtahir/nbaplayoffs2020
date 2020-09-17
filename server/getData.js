@@ -22,18 +22,33 @@ function getScores(link) {
 
       try {
         var scoreData = await page.$eval('table > tbody', (items) =>
-          [...items.children].map((game) => {
-            const props = {};
-            props.game = game.cells[1].textContent;
-            props.score = game.cells[2].children[0].textContent;
-            props.channel = game.cells[3].textContent;
-            props.date = game.cells[4].children[0].textContent;
+          [...items.children]
+            .map((game) => {
+              const props = {};
+              if (
+                game.cells.length &&
+                game.cells[1].textContent !==
+                  String.fromCharCode(game.cells[1].textContent.charCodeAt(0))
+              ) {
+                props.game = game.cells[1].textContent;
+                if (game.cells[2].children.length) {
+                  props.score = game.cells[2].children[0].textContent;
+                }
+                if (game.cells[3].textContent.length) {
+                  props.channel = game.cells[3].textContent;
+                }
+                if (game.cells[4].children.length) {
+                  props.date = game.cells[4].children[0].textContent;
+                }
+              }
 
-            return props;
-          })
+              return props;
+            })
+            .filter((game) => Object.keys(game).length > 0)
         );
       } catch (err) {
         console.log("There was an error on NBA's side.");
+        console.log(err);
         getScores(link);
       }
 
@@ -68,13 +83,20 @@ function editData(scores) {
       delete newArr[i].date;
     }
   }
+
   formattingData(newArr);
 }
 
 async function formattingData(scoresArr) {
   console.log('\n', 'formatting data to our liking...');
 
-  const seriesName = `${scoresArr[0].score.homeTeam}${scoresArr[0].score.awayTeam}`.toLowerCase();
+  let seriesName;
+  if (typeof scoresArr[0].score === 'string') {
+    const seriesSplit = scoresArr[0].score.split(' at ');
+    seriesName = `${seriesSplit[1]}${seriesSplit[0]}`.toLowerCase();
+  } else {
+    seriesName = `${scoresArr[0].score.homeTeam}${scoresArr[0].score.awayTeam}`.toLowerCase();
+  }
 
   const games = [];
   for (let i = 0; i < scoresArr.length; i++) {
@@ -144,8 +166,6 @@ function calculateWins(matchup) {
 }
 
 async function getAllScores(round) {
-  // const playoffsData = JSON.parse(fs.readFileSync(playoffFile));
-
   for (const series of playoffsData) {
     if (series.round === round && !series.seriesOver) {
       await getScores(series.link);
@@ -177,4 +197,4 @@ async function checkToUpdate(seriesLink) {
   }
 }
 
-getScores('westseries6');
+getScores('eastseries7');
