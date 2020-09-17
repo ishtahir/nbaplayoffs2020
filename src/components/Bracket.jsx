@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const Bracket = ({ setSeriesClicked, setSeries }) => {
   const [allMatches, setAllMatches] = useState([]);
+  const [emptyMatchup, setEmptyMatchup] = useState([]);
 
   useEffect(() => {
     axios
@@ -28,6 +29,27 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
         );
       })
       .catch((err) => console.log(err));
+
+    setEmptyMatchup([
+      {
+        highSeed: {
+          city: '',
+          mascot: '',
+          short: '',
+          seed: '',
+          wins: '',
+          conf: 'finals',
+        },
+        lowSeed: {
+          city: '',
+          mascot: '',
+          short: '',
+          seed: '',
+          wins: '',
+        },
+        seriesName: '',
+      },
+    ]);
   }, []);
 
   return (
@@ -52,26 +74,13 @@ const Bracket = ({ setSeriesClicked, setSeries }) => {
       />
       <Round
         round={4}
-        matchups={[
-          {
-            highSeed: {
-              city: '',
-              mascot: '',
-              short: '',
-              seed: '',
-              wins: '',
-              conf: 'finals',
-            },
-            lowSeed: {
-              city: '',
-              mascot: '',
-              short: '',
-              seed: '',
-              wins: '',
-            },
-            seriesName: '',
-          },
-        ]}
+        matchups={
+          allMatches.filter((match) => match.round === 4).length === 0
+            ? emptyMatchup
+            : allMatches.filter((match) => match.round === 4)
+        }
+        setSeriesClicked={setSeriesClicked}
+        setSeries={setSeries}
       />
     </div>
   );
