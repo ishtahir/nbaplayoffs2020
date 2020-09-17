@@ -52,8 +52,12 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
           <tr key={game.game}>
             <td className='info-game'>Game {i + 1}</td>
             <td colSpan='3' className='info-game-result'>
-              {!game.homeScore && !game.awayScore
-                ? '*'
+              {!game.completed
+                ? `${game.location}, ${
+                    game.channel.includes('TNT')
+                      ? game.channel.split(', ')[0]
+                      : game.channel
+                  }, ${game.date.split('If Needed').join('*')}`
                 : game.homeScore > game.awayScore
                 ? `${game.homeTeam} ${game.homeScore}, ${game.awayTeam} ${game.awayScore}`
                 : `${game.awayTeam} ${game.awayScore}, ${game.homeTeam} ${game.homeScore}`}
