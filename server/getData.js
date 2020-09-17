@@ -165,11 +165,11 @@ function calculateWins(matchup) {
   console.log('\n', `${matchup.seriesName} COMPLETED!`, '\n');
 }
 
-async function getAllScores(round) {
-  for (const series of playoffsData) {
-    if (series.round === round && !series.seriesOver) {
-      await getScores(series.link);
-    }
+async function getAllScores() {
+  const allSeriesData = await axios.get(`${baseUrl}/series`);
+  const allSeries = allSeriesData.data;
+  for (const series of allSeries) {
+    await getScores(series.link);
   }
 }
 
@@ -197,4 +197,48 @@ async function checkToUpdate(seriesLink) {
   }
 }
 
-getScores('eastseries7');
+async function timeStuff() {
+  const allSeriesData = await axios.get(`${baseUrl}/series`);
+  const activeSeries = allSeriesData.data.filter(
+    (series) => !series.seriesOver
+  );
+  activeSeries.forEach((series) => {
+    series.games.forEach((game) => {
+      if (!game.completed) {
+        game.parsed = parseDate(game.date);
+      }
+    });
+    updateDatabase(series.seriesName, { games: series.games });
+  });
+}
+
+function parseDate(date) {
+  const split = date.split(' ');
+  if (split[split.length - 1] === '') {
+    split.pop();
+  }
+  const trimmed = split.map((val) => val.trim());
+
+  let dateStr = '';
+
+  dateStr += `${trimmed[0]}/20`;
+  dateStr += ' ';
+
+  if (trimmed[1] !== 'TBD') {
+    const timeSplit = trimmed[1].split(':');
+    const hour = parseInt(timeSplit[0]) + 11;
+    dateStr += `${hour}:${timeSplit[1]}:00`;
+  }
+
+  console.log(dateStr);
+  return Date.parse(dateStr);
+}
+
+function hoursToMs(hours) {
+  return hours * 60 * 60 * 1000;
+}
+
+// timeStuff();
+
+// setInterval(getAllScores, );
+// module.exports = getAllScores;
