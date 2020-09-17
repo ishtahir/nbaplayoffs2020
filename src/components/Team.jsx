@@ -8,8 +8,8 @@ const Team = ({ seed, img, mascot, wins, high }) => {
       </span>
       <span className='team'>
         <img
-          src={`images/${img}`}
-          className={`${mascot}-img`}
+          src={img === '' ? '' : `images/${img}.svg`}
+          className={img === '' ? 'hide' : `${mascot}-img`}
           alt={mascot ? `${mascot} Logo` : ''}
         />
       </span>
