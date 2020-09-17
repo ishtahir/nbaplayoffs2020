@@ -26,8 +26,8 @@ const Round = ({ matchups, round, setSeriesClicked, setSeries }) => {
           lowSeed={matchup.lowSeed.seed}
           highWins={matchup.highSeed.wins}
           lowWins={matchup.lowSeed.wins}
-          highImg={`${matchup.highSeed.short}.svg`}
-          lowImg={`${matchup.lowSeed.short}.svg`}
+          highImg={matchup.highSeed.short}
+          lowImg={matchup.lowSeed.short}
           highMascot={matchup.highSeed.mascot}
           lowMascot={matchup.lowSeed.mascot}
           seriesName={matchup.seriesName}
