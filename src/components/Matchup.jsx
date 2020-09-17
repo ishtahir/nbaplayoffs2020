@@ -18,24 +18,24 @@ const Matchup = ({
 }) => (
   <div className='matchup'>
     <ul
-      className={conference}
+      className={conference ? conference : ''}
       onClick={() => {
         setSeriesClicked(seriesName);
         setSeries(series);
       }}
     >
       <Team
-        seed={highSeed}
+        seed={highSeed ? highSeed : ''}
         img={highImg ? highImg : ''}
-        mascot={highMascot}
-        wins={highWins}
+        mascot={highMascot ? highMascot : ''}
+        wins={highWins >= 0 ? highWins : ''}
         high={true}
       />
       <Team
-        seed={lowSeed}
+        seed={lowSeed ? lowSeed : ''}
         img={lowImg ? lowImg : ''}
-        mascot={lowMascot}
-        wins={lowWins}
+        mascot={lowMascot ? lowMascot : ''}
+        wins={lowWins >= 0 ? lowWins : ''}
         high={false}
       />
     </ul>
