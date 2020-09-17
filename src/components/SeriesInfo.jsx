@@ -52,7 +52,9 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
           <tr key={game.game}>
             <td className='info-game'>Game {i + 1}</td>
             <td colSpan='3' className='info-game-result'>
-              {!game.completed
+              {!game.hasOwnProperty('completed')
+                ? '*'
+                : !game.completed
                 ? `${game.location}, ${
                     game.channel.includes('TNT')
                       ? game.channel.split(', ')[0]
