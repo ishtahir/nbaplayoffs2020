@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
+const { get } = require('mongoose');
 
 const baseUrl = 'http://localhost:4501';
 
@@ -112,6 +113,7 @@ async function formattingData(scoresArr) {
       game.location = current.score;
       game.channel = current.channel;
       game.date = current.date;
+      game.parsed = parseDate(current.date);
     }
     game.completed = current.completed;
     games.push(game);
@@ -197,19 +199,28 @@ async function checkToUpdate(seriesLink) {
   }
 }
 
-async function timeStuff() {
+async function updateScoresWithTimer() {
   const allSeriesData = await axios.get(`${baseUrl}/series`);
   const activeSeries = allSeriesData.data.filter(
     (series) => !series.seriesOver
   );
+  const nextUp = [];
   activeSeries.forEach((series) => {
-    series.games.forEach((game) => {
+    for (const game of series.games) {
       if (!game.completed) {
-        game.parsed = parseDate(game.date);
+        nextUp.push({
+          series: series.link,
+          game: game.game,
+          parsed: game.parsed,
+        });
+        break;
       }
-    });
-    updateDatabase(series.seriesName, { games: series.games });
+    }
   });
+
+  setTimeout(() => {
+    getScores(nextUp[0].series);
+  }, nextUp[0].parsed + hoursToMs(3) - Date.now());
 }
 
 function parseDate(date) {
@@ -230,7 +241,6 @@ function parseDate(date) {
     dateStr += `${hour}:${timeSplit[1]}:00`;
   }
 
-  console.log(dateStr);
   return Date.parse(dateStr);
 }
 
@@ -349,7 +359,5 @@ function checkTeamEligibility(team, allSeries) {
   return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
-// timeStuff();
-
-// setInterval(getAllScores, );
-// module.exports = getAllScores;
+updateScoresWithTimer();
+// getScores('westseries7');
