@@ -385,4 +385,4 @@ function checkTeamEligibility(team, allSeries) {
   return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
-// updateScoresWithTimer();
+updateScoresWithTimer();
