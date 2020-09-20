@@ -246,7 +246,7 @@ async function updateScoresWithTimer() {
         clearInterval(interval);
       }
     }, hoursToMs(0.083));
-  }, currentGame.parsed + hoursToMs(3) - Date.now());
+  }, currentGame.parsed + hoursToMs(2.5) - Date.now());
 }
 
 function parseDate(date) {
