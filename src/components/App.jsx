@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Header from './Header.jsx';
 import Bracket from './Bracket.jsx';
 import SeriesInfo from './SeriesInfo.jsx';
-import Footer from './Footer.jsx';
 
 const App = () => {
   const [seriesClicked, setSeriesClicked] = useState('');
@@ -16,7 +15,6 @@ const App = () => {
       ) : (
         <SeriesInfo series={series} setSeriesClicked={setSeriesClicked} />
       )}
-      <Footer />
     </>
   );
 };
