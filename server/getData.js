@@ -209,7 +209,8 @@ async function updateScoresWithTimer() {
     for (const game of series.games) {
       if (!game.completed) {
         nextUp.push({
-          series: series.link,
+          link: series.link,
+          series: series.seriesName,
           game: game.game,
           parsed: game.parsed,
         });
@@ -217,10 +218,35 @@ async function updateScoresWithTimer() {
       }
     }
   });
-
+  let currentGame;
+  if (nextUp[0].parsed < nextUp[1].parsed) {
+    currentGame = nextUp[0];
+  } else {
+    currentGame = nextUp[1];
+  }
+  let interval;
   setTimeout(() => {
-    getScores(nextUp[0].series);
-  }, nextUp[0].parsed + hoursToMs(3) - Date.now());
+    console.log(
+      `SET TIMEOUT RAN AT ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
+      '\n\n'
+    );
+    interval = setInterval(async () => {
+      console.log(
+        `SET INTERVAL RAN AT ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
+        '\n\n'
+      );
+      getScores(currentGame.link);
+      const seriesData = await axios.get(
+        `${baseUrl}/series/${currentGame.series}`
+      );
+      const seriesGame = seriesData.data.games.filter(
+        (game) => game.game === currentGame.game
+      );
+      if (seriesGame[0].completed) {
+        clearInterval(interval);
+      }
+    }, hoursToMs(0.083));
+  }, currentGame.parsed + hoursToMs(3) - Date.now());
 }
 
 function parseDate(date) {
@@ -359,5 +385,4 @@ function checkTeamEligibility(team, allSeries) {
   return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
-updateScoresWithTimer();
-// getScores('westseries7');
+// updateScoresWithTimer();
