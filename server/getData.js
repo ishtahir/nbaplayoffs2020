@@ -200,10 +200,8 @@ async function checkToUpdate(seriesLink) {
 }
 
 async function updateScoresWithTimer() {
-  const allSeriesData = await axios.get(`${baseUrl}/series`);
-  const activeSeries = allSeriesData.data.filter(
-    (series) => !series.seriesOver
-  );
+  const allSeriesData = await axios.get(`${baseUrl}/series/current/active`);
+  const activeSeries = allSeriesData.data;
   const nextUp = [];
   activeSeries.forEach((series) => {
     for (const game of series.games) {
@@ -214,16 +212,11 @@ async function updateScoresWithTimer() {
           game: game.game,
           parsed: game.parsed,
         });
-        break;
       }
     }
   });
-  let currentGame;
-  if (nextUp[0].parsed < nextUp[1].parsed) {
-    currentGame = nextUp[0];
-  } else {
-    currentGame = nextUp[1];
-  }
+  nextUp.sort((a, b) => a.parsed - b.parsed);
+  const currentGame = nextUp[0];
   let interval;
   setTimeout(() => {
     console.log(
@@ -244,6 +237,7 @@ async function updateScoresWithTimer() {
       );
       if (seriesGame[0].completed) {
         clearInterval(interval);
+        nextUp.shift();
       }
     }, hoursToMs(0.083));
   }, currentGame.parsed + hoursToMs(2.5) - Date.now());
