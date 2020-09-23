@@ -28,7 +28,7 @@ mongoose
   .then(() => console.log("Connected to Ish's MongoDB Atlas!"))
   .catch(() => console.log("COULD NOT CONNECT TO ISH'S MONGO ATLAS!"));
 
-app.get('/series/:name', async (req, res) => {
+app.get('/series/:name', (req, res) => {
   nbaSeries
     .findOne({ seriesName: req.params.name })
     .exec()
@@ -43,7 +43,22 @@ app.get('/series/:name', async (req, res) => {
     );
 });
 
-app.get('/series/:conf/:link', async (req, res) => {
+app.get('/series/current/active', (req, res) => {
+  nbaSeries
+    .find({ seriesOver: false })
+    .exec()
+    .then((result) => {
+      console.log('Success getting documents!');
+      res.status(200).json(result);
+    })
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ error: err, message: 'Could not properly get documents!' })
+    );
+});
+
+app.get('/series/:conf/:link', (req, res) => {
   nbaSeries
     .findOne({ link: `${req.params.conf}series${req.params.link}` })
     .exec()
@@ -58,7 +73,7 @@ app.get('/series/:conf/:link', async (req, res) => {
     );
 });
 
-app.get('/series/', (req, res) => {
+app.get('/series', (req, res) => {
   nbaSeries
     .find({})
     .exec()
