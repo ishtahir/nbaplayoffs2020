@@ -379,4 +379,11 @@ function checkTeamEligibility(team, allSeries) {
   return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
+function randoFunc() {
+  setInterval(
+    () => console.log('SET INTERVAL WORKS FROM HEROKU!!! GOOOOO NUGGETS!'),
+    15000
+  );
+}
+randoFunc();
 updateScoresWithTimer();
