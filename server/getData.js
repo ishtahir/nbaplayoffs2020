@@ -1,11 +1,16 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
-const { get } = require('mongoose');
 
 const baseUrl = 'http://localhost:4501';
 
-function getScores(link) {
-  checkToUpdate(link.split('series').join('/')).then(async (series) => {
+function getScores(link, isFinals = false) {
+  let linkSplit;
+  if (isFinals) {
+    linkSplit = 'lalmia';
+  } else {
+    linkSplit = link.split('series').join('/');
+  }
+  checkToUpdate(linkSplit).then(async (series) => {
     if (series.seriesOver) {
       console.log(`${series.seriesName} is over and up to date.`);
       return;
@@ -388,4 +393,4 @@ function checkTeamEligibility(team, allSeries) {
 }
 
 // findNextGameToUpdate();
-determineMatchup(4);
+// getScores('finals', true);
