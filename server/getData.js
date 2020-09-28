@@ -171,7 +171,7 @@ async function getAllScores() {
   const allSeriesData = await axios.get(`${baseUrl}/series`);
   const allSeries = allSeriesData.data;
   for (const series of allSeries) {
-    await getScores(series.link);
+    getScores(series.link);
   }
 }
 
@@ -183,11 +183,20 @@ async function updateSettings(short) {
   }
 }
 
-function updateDatabase(seriesName, obj) {
-  axios
-    .patch(`${baseUrl}/series/${seriesName}`, obj)
-    .then((_) => console.log(`Success! Updated ${seriesName}!`))
-    .catch((_) => console.log(`There was an error updating ${seriesName}!`));
+function updateDatabase(seriesName, series, newPost = false) {
+  if (!newPost) {
+    axios
+      .patch(`${baseUrl}/series/${seriesName}`, series)
+      .then((_) => console.log(`Success! Updated ${seriesName}!`))
+      .catch((_) => console.log(`There was an error updating ${seriesName}!`));
+  } else {
+    axios
+      .post(`${baseUrl}/series/${seriesName}`, series)
+      .then((_) => console.log(`Success! Created new series: ${seriesName}!`))
+      .catch((_) =>
+        console.log(`There was an error creating series ${seriesName}!`)
+      );
+  }
 }
 
 async function checkToUpdate(seriesLink) {
@@ -199,9 +208,10 @@ async function checkToUpdate(seriesLink) {
   }
 }
 
-async function updateScoresWithTimer() {
+async function findNextGameToUpdate() {
   const allSeriesData = await axios.get(`${baseUrl}/series/current/active`);
   const activeSeries = allSeriesData.data;
+  // console.log('\n\n', 'activeSeries', activeSeries, '\n\n');
   const nextUp = [];
   activeSeries.forEach((series) => {
     for (const game of series.games) {
@@ -212,34 +222,27 @@ async function updateScoresWithTimer() {
           game: game.game,
           parsed: game.parsed,
         });
+        break;
       }
     }
   });
   nextUp.sort((a, b) => a.parsed - b.parsed);
-  const currentGame = nextUp[0];
-  let interval;
+  // console.log('\n\n', 'nextUp', nextUp, '\n\n');
+  updateScoresWithTimer(nextUp[0]);
+}
+
+function updateScoresWithTimer(currentGame) {
   setTimeout(() => {
-    console.log(
-      `SET TIMEOUT RAN AT ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
-      '\n\n'
-    );
-    interval = setInterval(async () => {
-      console.log(
-        `SET INTERVAL RAN AT ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
-        '\n\n'
-      );
+    let intervalID = setInterval(async () => {
       getScores(currentGame.link);
-      const seriesData = await axios.get(
-        `${baseUrl}/series/${currentGame.series}`
-      );
-      const seriesGame = seriesData.data.games.filter(
+      const series = await axios.get(`${baseUrl}/series/${currentGame.series}`);
+      const theGame = series.data.games.filter(
         (game) => game.game === currentGame.game
       );
-      if (seriesGame[0].completed) {
-        clearInterval(interval);
-        nextUp.shift();
+      if (theGame[0].completed) {
+        clearInterval(intervalID);
       }
-    }, hoursToMs(0.083));
+    }, 200000);
   }, currentGame.parsed + hoursToMs(2.5) - Date.now());
 }
 
@@ -270,7 +273,7 @@ function hoursToMs(hours) {
 
 async function determineMatchup(round) {
   const settings = await axios.get(`${baseUrl}/settings`);
-  const { westTeams, eastTeams, seedingOrder, last } = settings.data;
+  const { westTeams, eastTeams, seedingOrder } = settings.data;
   const allSeriesData = await axios.get(`${baseUrl}/series`);
   const allSeries = allSeriesData.data;
 
@@ -284,7 +287,7 @@ async function determineMatchup(round) {
     return;
   }
   const matchups = [];
-  let seeding, lastConf, isFinals;
+  let seeding, isFinals;
   if (round === 1) {
     seeding = 'first';
   } else if (round === 2) {
@@ -298,11 +301,16 @@ async function determineMatchup(round) {
   while (teams.length) {
     const currentTeam = teams[0];
 
-    const nextUp = teams.filter(
-      (team) =>
-        team.conf === currentTeam.conf &&
-        seedingOrder[currentTeam.seed][seeding].includes(team.seed)
-    )[0];
+    const nextUp = teams.filter((team) => {
+      if (isFinals) {
+        return !team.eliminated && team.conf !== currentTeam.conf;
+      } else {
+        return (
+          team.conf === currentTeam.conf &&
+          seedingOrder[currentTeam.seed][seeding].includes(team.seed)
+        );
+      }
+    })[0];
 
     let highTeam, lowTeam;
     if (currentTeam.seed < nextUp.seed) {
@@ -323,7 +331,7 @@ async function determineMatchup(round) {
   matchups.forEach((match) => createPlayoffMatchup(...match));
 }
 
-function createPlayoffMatchup(highTeam, lowTeam, round, finals = false) {
+function createPlayoffMatchup(highTeam, lowTeam, round, finals) {
   if (round === 1) {
     linkStartWest = 1;
     linkStartEast = 1;
@@ -368,7 +376,7 @@ function createPlayoffMatchup(highTeam, lowTeam, round, finals = false) {
     series.games.push({ game: `game${i}` });
   }
 
-  postToDatabase(series);
+  updateDatabase(series.seriesName, series, true);
   return series;
 }
 
@@ -379,4 +387,5 @@ function checkTeamEligibility(team, allSeries) {
   return !team.eliminated && teamSeries.every((series) => series.seriesOver);
 }
 
-updateScoresWithTimer();
+// findNextGameToUpdate();
+determineMatchup(4);
