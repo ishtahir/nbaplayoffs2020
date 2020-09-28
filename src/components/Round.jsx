@@ -21,6 +21,7 @@ const Round = ({ matchups, round, setSeriesClicked, setSeries }) => {
       {matchups.map((matchup, i) => (
         <Matchup
           key={`${matchup.seriesName}${i}`}
+          round={round}
           conference={matchup.highSeed.conf}
           highSeed={matchup.highSeed.seed}
           lowSeed={matchup.lowSeed.seed}
