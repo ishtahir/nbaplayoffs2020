@@ -15,10 +15,11 @@ const Matchup = ({
   setSeriesClicked,
   setSeries,
   series,
+  round,
 }) => (
   <div className='matchup'>
     <ul
-      className={conference ? conference : ''}
+      className={round === 4 ? 'finals' : conference && conference}
       onClick={() => {
         setSeriesClicked(seriesName);
         setSeries(series);
