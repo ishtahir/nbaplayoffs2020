@@ -48,30 +48,32 @@ const SeriesInfo = ({ series, setSeriesClicked }) => {
         </tr>
       </thead>
       <tbody>
-        {series.games.map((game, i) => (
-          <tr key={game.game}>
-            <td className='info-game'>Game {i + 1}</td>
-            <td colSpan='3' className='info-game-result'>
-              {!game.hasOwnProperty('completed')
-                ? '*'
-                : !game.completed
-                ? `${game.location}, ${
-                    game.channel.includes('TNT')
-                      ? game.channel.split(', ')[0]
-                      : game.channel
-                  }, ${game.date.split('If Needed').join('*')}`
-                : game.homeScore > game.awayScore
-                ? `${game.homeTeam} ${game.homeScore}, ${game.awayTeam} ${game.awayScore}`
-                : `${game.awayTeam} ${game.awayScore}, ${game.homeTeam} ${game.homeScore}`}
-            </td>
-          </tr>
-        ))}
+        {series.games
+          .filter((game) => game.hasOwnProperty('completed'))
+          .map((game, i) => (
+            <tr key={game.game}>
+              <td className='info-game'>Game {i + 1}</td>
+              <td colSpan='3' className='info-game-result'>
+                {!game.completed
+                  ? `${game.location}, ${
+                      game.channel.includes('TNT')
+                        ? game.channel.split(', ')[0]
+                        : game.channel
+                    }, ${game.date.split('If Needed').join('*')}`
+                  : game.homeScore > game.awayScore
+                  ? `${game.homeTeam} ${game.homeScore}, ${game.awayTeam} ${game.awayScore}`
+                  : `${game.awayTeam} ${game.awayScore}, ${game.homeTeam} ${game.homeScore}`}
+              </td>
+            </tr>
+          ))}
       </tbody>
       <tfoot>
         <tr>
-          <td colSpan='4' className='info-if-nec'>
-            * = if necessary
-          </td>
+          {!series.seriesOver && (
+            <td colSpan='4' className='info-if-nec'>
+              * = if necessary
+            </td>
+          )}
         </tr>
         <tr>
           <td colSpan='4' className='info-back-btn'>
